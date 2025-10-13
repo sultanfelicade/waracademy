@@ -2,6 +2,10 @@
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 
+Route::get('/', function () {
+    return view('landing'); // pastikan file resources/views/landing.blade.php ada
+})->name('landing');
+
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'processRegister'])->name('register.process');
 
@@ -17,5 +21,5 @@ Route::get('/home', function () {
     if (!session()->has('pengguna_id')) {
         return redirect()->route('login');
     }
-    return view('home', ['username' => session('pengguna_username')]);
+    return view('siswa.home', ['username' => session('pengguna_username')]);
 })->name('home');

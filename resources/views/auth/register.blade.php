@@ -5,14 +5,26 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register | WarAcademy</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gradient-to-br from-blue-100 via-white to-blue-200 min-h-screen flex items-center justify-center animate-bgGradient">
+<body class="font-poppins bg-gradient-to-br from-blue-100 via-white to-blue-200 min-h-screen flex items-center justify-center animate-bgGradient">
 
     <div class="bg-white shadow-2xl rounded-2xl flex flex-col md:flex-row w-[900px] max-w-full overflow-hidden transform transition-transform duration-500 hover:scale-105">
         <!-- LEFT: Info -->
         <div class="hidden md:flex flex-col justify-center items-center bg-gradient-to-b from-blue-700 to-blue-900 text-white p-10 w-1/2 relative overflow-hidden">
-            <h1 class="text-4xl font-bold mb-3 animate-slideInLeft">Bergabung Bersama Kami!</h1>
+            <h1 class="text-2xl font-bold mb-3 animate-slideInLeft">Bergabung Bersama Kami!</h1>
             <p class="text-gray-200 text-center mb-6 animate-slideInLeft delay-200">Daftar sekarang dan mulai petualanganmu di WarAcademy.</p>
             <a href="{{ route('login') }}" class="bg-white text-blue-800 font-semibold px-6 py-3 rounded-full hover:bg-gray-100 transition transform hover:scale-105 animate-slideInLeft delay-400">
                 Sudah Punya Akun? Login

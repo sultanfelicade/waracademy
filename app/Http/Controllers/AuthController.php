@@ -44,7 +44,7 @@ class AuthController extends Controller
         session()->put('pengguna_username', $user->username);
         session()->put('pengguna_role', $user->role);
 
-        return redirect()->route('home')->with('success', 'Registrasi berhasil. Selamat datang '.$user->username);
+        return redirect()->route('login')->with('success', 'Registrasi berhasil. Selamat datang '.$user->username);
     }
 
     public function showLogin()
@@ -80,7 +80,7 @@ class AuthController extends Controller
     {
         $request->session()->flush();
         $request->session()->regenerate();
-        return redirect()->route('login')->with('success','Anda telah logout.');
+        return redirect()->route('landing')->with('success','Anda telah logout.');
     }
 
     // Google OAuth
