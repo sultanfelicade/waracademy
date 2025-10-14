@@ -19,10 +19,16 @@
                 }
             }
         }
-    </script>
+  </script>
 </head>
 
-<body class="font-poppins relative bg-gradient-to-b from-[#0f1b2e] via-[#304863] to-[#3b5875] min-h-screen flex flex-col justify-between p-6 font-poppins overflow-hidden text-white select-none">
+<body class="font-poppins relative bg-gradient-to-b from-[#0f1b2e] via-[#304863] to-[#3b5875] min-h-screen flex flex-col justify-between p-6 text-white overflow-hidden select-none">
+
+  <!-- MUSIC BACKGROUND -->
+  <audio id="bgMusic" loop>
+      <source src="/audio/sound.mp3" type="audio/mpeg">
+      Browser kamu tidak mendukung audio.
+  </audio>
 
   <!-- CANVAS PARTIKEL -->
   <canvas id="particles" class="absolute inset-0 z-0"></canvas>
@@ -71,8 +77,6 @@
 
   <!-- MAIN SECTION -->
   <div class="flex-1 relative flex justify-center items-center z-10">
-
-    <!-- Achievement Box -->
     <div class="absolute top-0 left-0 mt-6 ml-6 text-center animate-slideInLeft delay-200">
       <div class="border border-[#6aa8fa]/60 rounded-xl w-44 h-40 p-4 bg-white/10 backdrop-blur-md shadow-lg hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] transition duration-300">
         <h2 class="font-semibold text-[#cfe4ff] mb-3 drop-shadow-sm">Achievement</h2>
@@ -84,42 +88,91 @@
       </div>
     </div>
 
-    <!-- Buttons -->
-   <div class="flex items-center space-x-12">
+    <div class="flex items-center space-x-12">
+      <div class="relative animate-slideInRight delay-300 group" style="width: 240px; height: 240px;">
+          <a href="{{ route('level') }}" class="w-full h-full flex flex-col items-center justify-center text-2xl font-semibold 
+                      bg-white/10 border border-[#6aa8fa]/60 rounded-xl backdrop-blur-md
+                      shadow-lg hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] hover:bg-white/20
+                      transition-all duration-300 transform group-hover:scale-105">
+              <span class="text-6xl mb-3 drop-shadow-lg">🚀</span>
+              <span>Level</span>
+          </a>
+      </div>
 
-    <div class="relative animate-slideInRight delay-300 group" style="width: 240px; height: 240px;">
-        <a href="{{ route('level') }}" class="w-full h-full flex flex-col items-center justify-center text-2xl font-semibold 
-                    bg-white/10 border border-[#6aa8fa]/60 rounded-xl backdrop-blur-md
-                    shadow-lg hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] hover:bg-white/20
-                    transition-all duration-300 transform group-hover:scale-105">
-            <span class="text-6xl mb-3 drop-shadow-lg">🚀</span>
-            <span>Level</span>
-        </a>
+      <div class="relative animate-slideInRight delay-400 group" style="width: 240px; height: 240px;">
+          <a href="{{ route('tournament') }}" class="w-full h-full flex flex-col items-center justify-center text-2xl font-semibold 
+                      bg-white/10 border border-[#6aa8fa]/60 rounded-xl backdrop-blur-md
+                      shadow-lg hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] hover:bg-white/20
+                      transition-all duration-300 transform group-hover:scale-105">
+              <span class="text-6xl mb-3 drop-shadow-lg">🏆</span>
+              <span>Tournament</span>
+          </a>
+      </div>
     </div>
-
-    <div class="relative animate-slideInRight delay-400 group" style="width: 240px; height: 240px;">
-        <a href="{{ route('tournament') }}" class="w-full h-full flex flex-col items-center justify-center text-2xl font-semibold 
-                    bg-white/10 border border-[#6aa8fa]/60 rounded-xl backdrop-blur-md
-                    shadow-lg hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] hover:bg-white/20
-                    transition-all duration-300 transform group-hover:scale-105">
-            <span class="text-6xl mb-3 drop-shadow-lg">🏆</span>
-            <span>Tournament</span>
-        </a>
-    </div>
-    
-</div>
-    </div>
-
   </div>
 
   <!-- FOOTER BUTTONS -->
-  <div class="flex justify-between items-end animate-slideInUp delay-500 z-10">
-    <!-- Setting -->
-    <button class="flex items-center gap-2 bg-white/10 border border-[#6aa8fa]/40 rounded-xl px-4 py-2 text-white font-medium shadow-md hover:bg-white/20 backdrop-blur-sm transition transform hover:scale-105">
-      ⚙️ Setting
-    </button>
+  <div class="flex justify-between items-end animate-slideInUp delay-500 z-10 relative" 
+       x-data="{ showSetting: false, volume: 0.5, muted: false }" 
+       x-init="
+          const savedVol = localStorage.getItem('volume');
+          const savedMute = localStorage.getItem('muted');
+          if(savedVol) volume = parseFloat(savedVol);
+          if(savedMute) muted = savedMute === 'true';
+          const audio = document.getElementById('bgMusic');
+          audio.volume = volume;
+          if(!muted) audio.play();
+       ">
 
-    <!-- Top 100 -->
+    <!-- SETTING BUTTON -->
+    <div class="relative">
+      <button @click="showSetting = !showSetting" 
+              class="flex items-center gap-2 bg-white/10 border border-[#6aa8fa]/40 rounded-xl px-4 py-2 text-white font-medium shadow-md hover:bg-white/20 backdrop-blur-sm transition transform hover:scale-105">
+        ⚙️ Setting
+      </button>
+
+      <!-- DROPDOWN (PERBAIKAN POSISI DAN ANIMASI) -->
+      <div x-show="showSetting" 
+           @click.away="showSetting = false"
+           x-transition:enter="transition ease-out duration-300"
+           x-transition:enter-start="opacity-0 translate-y-3 scale-95"
+           x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+           x-transition:leave="transition ease-in duration-200"
+           x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+           x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+           class="absolute bottom-full mb-4 left-0 w-72 bg-white/95 text-gray-800 rounded-2xl shadow-2xl border border-gray-300/70 
+                  p-5 text-sm backdrop-blur-xl z-30 origin-bottom-left">
+
+          <h3 class="font-semibold text-gray-700 mb-2">🎵 Pengaturan Suara</h3>
+          
+          <!-- Toggle Musik -->
+          <div class="flex justify-between items-center mb-3">
+            <span>Musik</span>
+            <button @click="
+                muted = !muted;
+                const audio = document.getElementById('bgMusic');
+                if(muted){ audio.pause(); } else { audio.play(); }
+                localStorage.setItem('muted', muted);
+              "
+              class="px-3 py-1 rounded-md font-semibold transition"
+              :class="muted ? 'bg-red-500 text-white' : 'bg-green-500 text-white'">
+              <span x-text="muted ? 'Mati' : 'Hidup'"></span>
+            </button>
+          </div>
+
+          <!-- Slider Volume -->
+          <label class="block mb-1 text-gray-700 font-medium">Volume</label>
+          <input type="range" min="0" max="1" step="0.01" x-model="volume"
+                 @input="
+                    const audio = document.getElementById('bgMusic');
+                    audio.volume = volume;
+                    localStorage.setItem('volume', volume);
+                 "
+                 class="w-full accent-blue-600 cursor-pointer">
+      </div>
+    </div>
+
+    <!-- TOP 100 -->
     <button class="relative bg-gradient-to-b from-[#2f5fa8] to-[#0c2957] text-white px-6 py-2 rounded-xl font-semibold 
                    border border-[#1b3e75]
                    shadow-[0_4px_10px_rgba(0,0,30,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]
@@ -135,12 +188,11 @@
   <!-- Cahaya kecil di sudut kanan bawah -->
   <div class="absolute right-8 bottom-6 w-4 h-4 rounded-full bg-white/80 blur-[2px] shadow-[0_0_25px_rgba(255,255,255,0.6)] animate-pulseLight"></div>
 
-  <!-- ANIMASI -->
+  <!-- STYLE ANIMASI -->
   <style>
     @keyframes slideInLeft { 0% { opacity: 0; transform: translateX(-40px); } 100% { opacity: 1; transform: translateX(0); } }
     @keyframes slideInRight { 0% { opacity: 0; transform: translateX(40px); } 100% { opacity: 1; transform: translateX(0); } }
     @keyframes slideInUp { 0% { opacity: 0; transform: translateY(40px); } 100% { opacity: 1; transform: translateY(0); } }
-    @keyframes slideInDown { 0% { opacity: 0; transform: translateY(-40px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes fadeInDown { 0% { opacity: 0; transform: translateY(-20px); } 100% { opacity: 1; transform: translateY(0); } }
     @keyframes fadeIn { 0% { opacity: 0; } 100% { opacity: 1; } }
     @keyframes pulseLight { 0%,100% { opacity: 0.7; transform: scale(1); } 50% { opacity: 1; transform: scale(1.3); } }
@@ -156,7 +208,6 @@
     .delay-300 { animation-delay: 0.3s; }
     .delay-400 { animation-delay: 0.4s; }
     .delay-500 { animation-delay: 0.5s; }
-
   </style>
 
   <!-- SCRIPT PARTIKEL -->
@@ -195,6 +246,5 @@
       canvas.height = innerHeight;
     });
   </script>
-
 </body>
 </html>
