@@ -23,3 +23,17 @@ Route::get('/home', function () {
     }
     return view('siswa.home', ['username' => session('pengguna_username')]);
 })->name('home');
+
+Route::get('/level', function () {
+    if (!session()->has('pengguna_id')) {
+        return redirect()->route('login');
+    }
+    return view('siswa.level');
+})->name('level');
+
+Route::get('/tournament', function () {
+    if (!session()->has('pengguna_id')) {
+        return redirect()->route('login');
+    }
+    return view('siswa.tournament');
+})->name('tournament');

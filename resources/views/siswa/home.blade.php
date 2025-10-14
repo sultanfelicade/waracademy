@@ -44,7 +44,7 @@
   <!-- HEADER -->
   <div class="relative w-full text-center animate-fadeInDown z-10">
     <h1 class="font-blackops text-3xl md:text-4xl font-extrabold bg-gradient-to-b from-[#dce6f2] via-[#a3d3fa] to-[#6aa8fa] bg-clip-text text-transparent drop-shadow-[0_0_15px_rgba(70,150,255,0.6)]">
-      Menu Utama (Siswa)
+      Menu Utama
     </h1>
 
     <!-- Profile -->
@@ -85,35 +85,31 @@
     </div>
 
     <!-- Buttons -->
-    <div class="flex items-center space-x-10">
-      <!-- Level Button -->
-      <div class="relative animate-slideInRight delay-300">
-        <button class="relative px-12 py-8 text-2xl font-semibold rounded-2xl 
-                      bg-gradient-to-b from-[#2f5fa8] to-[#0c2957]
-                      border-2 border-[#1b3e75]
-                      shadow-[0_4px_10px_rgba(0,0,30,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]
-                      hover:scale-105 hover:shadow-[0_0_25px_rgba(70,150,255,0.8)]
-                      transition-all duration-300 ease-in-out overflow-hidden group">
-          <span class="relative z-10">Level</span>
-          <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                        translate-x-[-100%] group-hover:translate-x-[100%] 
-                        transition-transform duration-700"></span>
-        </button>
-      </div>
+   <div class="flex items-center space-x-12">
 
-      <!-- Tournament Button -->
-      <div class="relative animate-slideInRight delay-400">
-        <button class="relative px-12 py-8 text-2xl font-semibold rounded-2xl border-2 border-[#6aa8fa]/50 
-                      bg-white/10 text-[#dce6f2] backdrop-blur-md shadow-lg
-                      hover:scale-105 hover:shadow-[0_0_25px_rgba(70,150,255,0.5)]
-                      transition-all duration-300 ease-in-out overflow-hidden group">
-          <span class="relative z-10">Tournament</span>
-          <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                        translate-x-[-100%] group-hover:translate-x-[100%] 
-                        transition-transform duration-700"></span>
-        </button>
-      </div>
+    <div class="relative animate-slideInRight delay-300 group" style="width: 240px; height: 240px;">
+        <a href="{{ route('level') }}" class="w-full h-full flex flex-col items-center justify-center text-2xl font-semibold 
+                    bg-white/10 border border-[#6aa8fa]/60 rounded-xl backdrop-blur-md
+                    shadow-lg hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] hover:bg-white/20
+                    transition-all duration-300 transform group-hover:scale-105">
+            <span class="text-6xl mb-3 drop-shadow-lg">🚀</span>
+            <span>Level</span>
+        </a>
     </div>
+
+    <div class="relative animate-slideInRight delay-400 group" style="width: 240px; height: 240px;">
+        <a href="{{ route('tournament') }}" class="w-full h-full flex flex-col items-center justify-center text-2xl font-semibold 
+                    bg-white/10 border border-[#6aa8fa]/60 rounded-xl backdrop-blur-md
+                    shadow-lg hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] hover:bg-white/20
+                    transition-all duration-300 transform group-hover:scale-105">
+            <span class="text-6xl mb-3 drop-shadow-lg">🏆</span>
+            <span>Tournament</span>
+        </a>
+    </div>
+    
+</div>
+    </div>
+
   </div>
 
   <!-- FOOTER BUTTONS -->
@@ -160,6 +156,7 @@
     .delay-300 { animation-delay: 0.3s; }
     .delay-400 { animation-delay: 0.4s; }
     .delay-500 { animation-delay: 0.5s; }
+
   </style>
 
   <!-- SCRIPT PARTIKEL -->
