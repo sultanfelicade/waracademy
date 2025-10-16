@@ -1,9 +1,10 @@
 <?php
 use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
 
-Route::get('/profil/{id}', [ProfileController::class, 'show'])->name('profil.show');
+Route::get('/', function () {
+    return view('landing'); // pastikan file resources/views/landing.blade.php ada
+})->name('landing');
 
 Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
 Route::post('/register', [AuthController::class, 'processRegister'])->name('register.process');
@@ -20,12 +21,19 @@ Route::get('/home', function () {
     if (!session()->has('pengguna_id')) {
         return redirect()->route('login');
     }
-Route::get('/', function () {
-    return redirect()->route('login');
-    });
-    return view('home', ['username' => session('pengguna_username')]);
+    return view('siswa.home', ['username' => session('pengguna_username')]);
 })->name('home');
 
-Route::get('/', function () {
-    return redirect()->route('login');
-});
+Route::get('/level', function () {
+    if (!session()->has('pengguna_id')) {
+        return redirect()->route('login');
+    }
+    return view('siswa.level');
+})->name('level');
+
+Route::get('/tournament', function () {
+    if (!session()->has('pengguna_id')) {
+        return redirect()->route('login');
+    }
+    return view('siswa.tournament');
+})->name('tournament');

@@ -44,7 +44,7 @@ class AuthController extends Controller
         session()->put('pengguna_username', $user->username);
         session()->put('pengguna_role', $user->role);
 
-        return redirect()->route('home')->with('success', 'Registrasi berhasil. Selamat datang '.$user->username);
+        return redirect()->route('login')->with('success', 'Registrasi berhasil. Selamat datang '.$user->username);
     }
 
     public function showLogin()
@@ -74,17 +74,13 @@ class AuthController extends Controller
         session()->put('pengguna_role', $user->role);
 
         return redirect()->route('home')->with('success','Berhasil login, selamat datang '.$user->username);
-        // DENGAN BARIS INI
-        // return redirect()->route('profil.show', ['id' => $user->id_pengguna])->with('success', 'Berhasil login, selamat datang '.$user->username);
-        // di dalam method processRegister()
-        // return redirect()->route('profil.show', ['id' => $user->id_pengguna])->with('success', 'Registrasi berhasil. Selamat datang '.$user->username);
     }
 
     public function logout(Request $request)
     {
         $request->session()->flush();
         $request->session()->regenerate();
-        return redirect()->route('login')->with('success','Anda telah logout.');
+        return redirect()->route('landing')->with('success','Anda telah logout.');
     }
 
     // Google OAuth
@@ -96,8 +92,8 @@ class AuthController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $googleUser = Socialite::driver('google')()->user();
-
+            $googleUser = Socialite::driver('google')->stateless()->user();
+    
             $user = Pengguna::updateOrCreate(
                 ['email' => $googleUser->getEmail()],
                 [
@@ -109,15 +105,13 @@ class AuthController extends Controller
                     'tanggal_registrasi' => now(),
                 ]
             );
-
+    
             // pakai session sama seperti login manual
             session()->put('pengguna_id', $user->id_pengguna);
             session()->put('pengguna_username', $user->username);
             session()->put('pengguna_role', $user->role);
-
+    
             return redirect()->route('home')->with('success','Berhasil login dengan Google, selamat datang '.$user->username);
-            // di dalam method processRegister()
-            // return redirect()->route('profil.show', ['id' => $user->id_pengguna])->with('success', 'Registrasi berhasil. Selamat datang '.$user->username);
         } catch (\Exception $e) {
             return redirect()->route('login')->with('error', 'Gagal login dengan Google: '.$e->getMessage());
         }

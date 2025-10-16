@@ -5,18 +5,38 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | WarAcademy</title>
+
+    <!-- FONT GOOGLE -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { 
+                        poppins: ['Poppins', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body class="bg-gradient-to-br from-blue-100 via-white to-blue-200 min-h-screen flex items-center justify-center animate-bgGradient">
+
+<body class="font-poppins bg-gradient-to-br from-blue-100 via-white to-blue-200 min-h-screen flex items-center justify-center animate-bgGradient">
 
     <div class="bg-white shadow-2xl rounded-2xl flex flex-col md:flex-row w-[900px] max-w-full overflow-hidden transform transition-transform duration-500 hover:scale-105">
         <!-- LEFT: Info -->
         <div class="hidden md:flex flex-col justify-center items-center bg-gradient-to-b from-blue-700 to-blue-900 text-white p-10 w-1/2 relative overflow-hidden">
             <h1 class="text-4xl font-bold mb-3 animate-slideInLeft">Selamat Datang!</h1>
-            <p class="text-gray-200 text-center mb-6 animate-slideInLeft delay-200">Masuk ke akunmu untuk melanjutkan petualangan di WarAcademy.</p>
-            <a href="{{ route('register') }}" class="bg-white text-blue-800 font-semibold px-6 py-3 rounded-full hover:bg-gray-100 transition transform hover:scale-105 animate-slideInLeft delay-400">
+            <p class="text-gray-200 text-center mb-6 animate-slideInLeft delay-200">
+                Masuk ke akunmu untuk melanjutkan petualangan di WarAcademy.
+            </p>
+            <a href="{{ route('register') }}" 
+               class="bg-white text-blue-800 font-semibold px-6 py-3 rounded-full hover:bg-gray-100 transition transform hover:scale-105 animate-slideInLeft delay-400">
                 Daftar Sekarang
             </a>
+
             <!-- Decorative Circles -->
             <span class="absolute w-32 h-32 bg-white opacity-10 rounded-full top-10 left-10 animate-bounceSlow"></span>
             <span class="absolute w-20 h-20 bg-white opacity-10 rounded-full bottom-10 right-10 animate-bounceSlow delay-200"></span>
@@ -40,7 +60,8 @@
                     </div>
                 </div>
 
-                <button type="submit" class="w-full mt-6 bg-blue-700 text-white py-2 rounded-lg font-semibold hover:bg-blue-800 transition transform hover:scale-105 animate-slideInRight delay-400">
+                <button type="submit" 
+                        class="w-full mt-6 bg-blue-700 text-white py-2 rounded-lg font-semibold hover:bg-blue-800 transition transform hover:scale-105 animate-slideInRight delay-400">
                     Masuk
                 </button>
 
@@ -49,7 +70,8 @@
                 @endif
 
                 <div class="text-center mt-6 animate-slideInRight delay-500">
-                    <a href="{{ route('google.redirect') }}" class="inline-flex items-center bg-white border border-gray-300 px-4 py-2 rounded-full text-sm hover:bg-gray-100 transition transform hover:scale-105">
+                    <a href="{{ route('google.redirect') }}" 
+                       class="inline-flex items-center bg-white border border-gray-300 px-4 py-2 rounded-full text-sm hover:bg-gray-100 transition transform hover:scale-105">
                         <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5 mr-2">
                         Login dengan Google
                     </a>
@@ -58,6 +80,7 @@
         </div>
     </div>
 
+    <!-- ANIMASI CUSTOM -->
     <style>
         @keyframes slideInLeft {
             0% { opacity: 0; transform: translateX(-50px); }
