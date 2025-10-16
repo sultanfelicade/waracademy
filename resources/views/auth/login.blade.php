@@ -5,10 +5,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | WarAcademy</title>
-
-    <!-- FONT GOOGLE -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -21,98 +18,98 @@
             }
         }
     </script>
-</head>
-
-<body class="font-poppins bg-gradient-to-br from-blue-100 via-white to-blue-200 min-h-screen flex items-center justify-center animate-bgGradient">
-
-    <div class="bg-white shadow-2xl rounded-2xl flex flex-col md:flex-row w-[900px] max-w-full overflow-hidden transform transition-transform duration-500 hover:scale-105">
-        <!-- LEFT: Info -->
-        <div class="hidden md:flex flex-col justify-center items-center bg-gradient-to-b from-blue-700 to-blue-900 text-white p-10 w-1/2 relative overflow-hidden">
-            <h1 class="text-4xl font-bold mb-3 animate-slideInLeft">Selamat Datang!</h1>
-            <p class="text-gray-200 text-center mb-6 animate-slideInLeft delay-200">
-                Masuk ke akunmu untuk melanjutkan petualangan di WarAcademy.
-            </p>
-            <a href="{{ route('register') }}" 
-               class="bg-white text-blue-800 font-semibold px-6 py-3 rounded-full hover:bg-gray-100 transition transform hover:scale-105 animate-slideInLeft delay-400">
-                Daftar Sekarang
-            </a>
-
-            <!-- Decorative Circles -->
-            <span class="absolute w-32 h-32 bg-white opacity-10 rounded-full top-10 left-10 animate-bounceSlow"></span>
-            <span class="absolute w-20 h-20 bg-white opacity-10 rounded-full bottom-10 right-10 animate-bounceSlow delay-200"></span>
-        </div>
-
-        <!-- RIGHT: Login Form -->
-        <div class="w-full md:w-1/2 p-10 flex flex-col justify-center">
-            <h2 class="text-3xl font-bold text-center text-blue-700 mb-6 animate-slideInRight">Login</h2>
-            <form method="POST" action="{{ route('login.process') }}">
-                @csrf
-                <div class="space-y-4">
-                    <div class="animate-slideInRight delay-200">
-                        <label class="block text-sm font-medium mb-1 text-gray-700">Username</label>
-                        <input type="text" name="username" value="{{ old('username') }}" required
-                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300 hover:ring-blue-300">
-                    </div>
-                    <div class="animate-slideInRight delay-300">
-                        <label class="block text-sm font-medium mb-1 text-gray-700">Password</label>
-                        <input type="password" name="password" required
-                            class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none transition-all duration-300 hover:ring-blue-300">
-                    </div>
-                </div>
-
-                <button type="submit" 
-                        class="w-full mt-6 bg-blue-700 text-white py-2 rounded-lg font-semibold hover:bg-blue-800 transition transform hover:scale-105 animate-slideInRight delay-400">
-                    Masuk
-                </button>
-
-                @if($errors->any())
-                    <p class="text-red-500 text-sm mt-3 animate-fadeIn">{{ $errors->first() }}</p>
-                @endif
-
-                <div class="text-center mt-6 animate-slideInRight delay-500">
-                    <a href="{{ route('google.redirect') }}" 
-                       class="inline-flex items-center bg-white border border-gray-300 px-4 py-2 rounded-full text-sm hover:bg-gray-100 transition transform hover:scale-105">
-                        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5 mr-2">
-                        Login dengan Google
-                    </a>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <!-- ANIMASI CUSTOM -->
     <style>
-        @keyframes slideInLeft {
-            0% { opacity: 0; transform: translateX(-50px); }
-            100% { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes slideInRight {
-            0% { opacity: 0; transform: translateX(50px); }
-            100% { opacity: 1; transform: translateX(0); }
-        }
-        @keyframes fadeIn { 
-            0% { opacity: 0; } 
-            100% { opacity: 1; } 
-        }
-        @keyframes bgGradient {
-            0%,100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-        }
-        @keyframes bounceSlow {
-            0%,100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+        /* Custom styles for the starry background and animations */
+        body {
+            background-color: #0F172A;
+            background-image: 
+                radial-gradient(white, rgba(255,255,255,.2) 2px, transparent 40px),
+                radial-gradient(white, rgba(255,255,255,.15) 1px, transparent 30px),
+                radial-gradient(white, rgba(255,255,255,.1) 2px, transparent 40px),
+                radial-gradient(rgba(255,255,255,.4), rgba(255,255,255,.1) 2px, transparent 30px);
+            background-size: 550px 550px, 350px 350px, 250px 250px, 150px 150px; 
+            background-position: 0 0, 40px 60px, 130px 270px, 70px 100px;
         }
 
-        .animate-slideInLeft { animation: slideInLeft 0.5s ease-out forwards; }
-        .animate-slideInRight { animation: slideInRight 0.5s ease-out forwards; }
-        .animate-fadeIn { animation: fadeIn 0.5s ease-out forwards; }
-        .animate-bgGradient { background-size: 200% 200%; animation: bgGradient 10s ease infinite; }
-        .animate-bounceSlow { animation: bounceSlow 3s ease-in-out infinite; }
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .animate-fadeIn {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+
         .delay-200 { animation-delay: 0.2s; }
         .delay-300 { animation-delay: 0.3s; }
         .delay-400 { animation-delay: 0.4s; }
         .delay-500 { animation-delay: 0.5s; }
+        .delay-600 { animation-delay: 0.6s; }
+
     </style>
+</head>
+<body class="font-poppins text-white min-h-screen flex items-center justify-center p-4">
+
+    <div class="bg-[#1E293B]/60 backdrop-blur-sm border border-slate-700 rounded-2xl w-full max-w-md p-8 shadow-2xl animate-fadeIn">
+        
+        <!-- Login Form -->
+        <div class="w-full">
+            <h2 class="text-3xl font-bold text-center text-white mb-2">Selamat Datang Kembali!</h2>
+            <p class="text-slate-400 text-center mb-8">Masuk untuk melanjutkan petualanganmu.</p>
+            
+            <form method="POST" action="{{ route('login.process') }}">
+                @csrf
+                <div class="space-y-4">
+                    <div class="opacity-0 animate-fadeIn delay-200" style="animation-fill-mode: forwards;">
+                        <label class="block text-sm font-medium mb-2 text-slate-300">Username</label>
+                        <input type="text" name="username" value="{{ old('username') }}" required placeholder="Masukkan username"
+                               class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300">
+                    </div>
+                    <div class="opacity-0 animate-fadeIn delay-300" style="animation-fill-mode: forwards;">
+                        <label class="block text-sm font-medium mb-2 text-slate-300">Password</label>
+                        <input type="password" name="password" required placeholder="Masukkan password"
+                               class="w-full bg-slate-800 border border-slate-700 text-white rounded-lg px-4 py-2.5 focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all duration-300">
+                    </div>
+                </div>
+
+                <button type="submit" 
+                        class="w-full mt-8 bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-all transform hover:scale-105 duration-300 opacity-0 animate-fadeIn delay-400" style="animation-fill-mode: forwards;">
+                    Masuk
+                </button>
+
+                @if($errors->any())
+                    <p class="text-red-500 text-sm text-center mt-4">{{ $errors->first() }}</p>
+                @endif
+
+                <div class="flex items-center my-6 opacity-0 animate-fadeIn delay-500" style="animation-fill-mode: forwards;">
+                    <div class="flex-grow border-t border-slate-700"></div>
+                    <span class="px-4 text-slate-500 text-sm">ATAU</span>
+                    <div class="flex-grow border-t border-slate-700"></div>
+                </div>
+
+                <div class="text-center opacity-0 animate-fadeIn delay-600" style="animation-fill-mode: forwards;">
+                    <a href="{{ route('google.redirect') }}" 
+                       class="inline-flex items-center justify-center bg-slate-800 border border-slate-700 w-full px-4 py-2.5 rounded-lg text-sm text-slate-300 hover:bg-slate-700 transition transform hover:scale-105 duration-300">
+                        <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google" class="w-5 h-5 mr-3">
+                        Login dengan Google
+                    </a>
+                </div>
+            </form>
+
+             <p class="text-center text-sm text-slate-400 mt-6">
+                Belum punya akun? 
+                <a href="{{ route('register') }}" class="font-semibold text-blue-500 hover:underline">
+                    Daftar di sini
+                </a>
+            </p>
+        </div>
+    </div>
 
 </body>
 </html>
