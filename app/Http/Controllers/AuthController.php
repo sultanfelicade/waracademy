@@ -73,6 +73,10 @@ class AuthController extends Controller
         session()->put('pengguna_username', $user->username);
         session()->put('pengguna_role', $user->role);
 
+    
+        if($user->role === "teacher"){
+            return redirect()->route('guru.home')->with('success','berhasil login, selamat datang' . $user->username);
+        }
         return redirect()->route('home')->with('success','Berhasil login, selamat datang '.$user->username);
     }
 

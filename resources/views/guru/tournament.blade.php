@@ -71,85 +71,118 @@
     </div>
   </header>
 
-  <!-- Main Section -->
-  <main class="flex-1 relative flex justify-center items-center z-10">
+<!-- Main Section -->
+<main class="flex-1 relative flex justify-center items-start z-10 overflow-y-auto scale-90">
+  <div class="flex gap-4 w-full max-w-6xl justify-center items-stretch"> <!-- Container flex baru -->
+    
+    <!-- Create Tournament Section -->
+    <div class="animate-slideInLeft delay-300 flex-1">
+      <div class="bg-white/10 border border-[#6aa8fa]/40 rounded-xl px-6 py-4 text-white font-medium 
+                  shadow-md backdrop-blur-sm h-full flex flex-col">
+        <h2 class="font-semibold text-[#cfe4ff] mb-6 text-xl drop-shadow-sm tracking-wide text-left">
+          Create New Tournament
+        </h2>
 
-  <!-- Daftar turnament yang di ikuti -->
-  <div class="absolute top-0 left-0 mt-6 ml-6 animate-slideInLeft delay-200">
-    <div class="border border-[#6aa8fa]/50 bg-gradient-to-b from-white/10 to-[#1b2e4a]/30 
-                rounded-2xl w-60 h-80 p-5 backdrop-blur-md shadow-[0_0_15px_rgba(70,150,255,0.3)] 
-                overflow-hidden">
-
-      <!-- Cahaya animasi -->
-      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
-                  translate-x-[-100%] group-hover:translate-x-[100%] 
-                  transition-transform duration-[1500ms] ease-out"></div>
-
-      <!-- Judul -->
-      <h2 class="font-semibold text-[#cfe4ff] mb-4 text-lg drop-shadow-sm tracking-wide">
-        🏆  Tournaments
-      </h2>
-
-      <!-- Daftar Turnamen -->
-      <div class="space-y-3 text-blue-100 text-sm">
-
-        <!-- Item 1 -->
-        <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
-                    hover:bg-white/10 transition">
-          <a href=""><span class="truncate text-white" id="tournament-title">Fast Tournament Competition</span></a>
-        </div>
-
-        <!-- Item 2 -->
-        <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
-                    hover:bg-white/10 transition">
-          <a href=""><span>Weekly Battle Arena</span></a>
-        </div>
-
-        <!-- Item 3 -->
-        <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
-                    hover:bg-white/10 transition">
-          <a href=""><span>War Masters League</span></a>
-        </div>
-      </div>
-
-      <!-- Tombol lihat semua -->
-      <button class="absolute bottom-4 left-1/2 -translate-x-1/2 
-                    bg-gradient-to-b from-[#2f5fa8] to-[#0c2957] text-white 
-                    px-4 py-1.5 rounded-lg text-xs font-semibold border border-[#1b3e75]
-                    shadow-[0_4px_8px_rgba(0,0,30,0.4)]
-                    hover:shadow-[0_0_20px_rgba(70,150,255,0.5)] 
-                    transition-all duration-300">
-        View All
-      </button>
-    </div>
-  </div>
-
-
-    <!-- Input Kode Turnamen -->
-    <div class="text-center">
-        <h2 class="text-lg font-semibold mb-3 text-white">Enter Tournament Code</h2>
-      <input type="text" 
+        <h2 class="text-left mb-2">Tournament Name</h2>
+        <input type="text" 
             class="bg-white/10 border border-[#6aa8fa]/40 rounded-xl px-4 py-2 text-white font-medium 
-                    shadow-md hover:bg-white/20 backdrop-blur-sm focus:bg-white/20 focus:border-blue-400 
-                    focus:outline-none w-64 text-center placeholder-gray-300 hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] 
-                    transition duration-300"
+                  shadow-md hover:bg-white/20 backdrop-blur-sm focus:bg-white/20 focus:border-blue-400 
+                  focus:outline-none w-full text-left placeholder-gray-300 hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] 
+                  transition duration-300 mb-2"
             placeholder="Example: WAR123">
 
+        <h2 class="mb-2">Description</h2>
+        <textarea type="text-area" 
+            class="bg-white/10 border border-[#6aa8fa]/40 rounded-xl px-4 py-2 text-white font-medium 
+                  shadow-md hover:bg-white/20 backdrop-blur-sm focus:bg-white/20 focus:border-blue-400 
+                  focus:outline-none w-full text-left placeholder-gray-300 hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] 
+                  transition duration-300 mb-2 flex-1 min-h-[120px]"
+            placeholder="Description Game....."></textarea>
+        
+        <div class="flex gap-4 mb-4">
+          <div class="flex-1">
+            <label class="block mb-1 text-left">Start Date</label>
+            <input type="datetime-local"
+                class="bg-white/10 border border-[#6aa8fa]/40 rounded-xl px-4 py-2 text-white font-medium 
+                      shadow-md hover:bg-white/20 backdrop-blur-sm focus:bg-white/20 focus:border-blue-400 
+                      focus:outline-none w-full placeholder-gray-300 hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] 
+                      transition duration-300">
+          </div>
 
+          <div class="flex-1">
+            <label class="block mb-1 text-left">End Date</label>
+            <input type="datetime-local"
+                class="bg-white/10 border border-[#6aa8fa]/40 rounded-xl px-4 py-2 text-white font-medium 
+                      shadow-md hover:bg-white/20 backdrop-blur-sm focus:bg-white/20 focus:border-blue-400 
+                      focus:outline-none w-full placeholder-gray-300 hover:shadow-[0_0_25px_rgba(70,150,255,0.4)] 
+                      transition duration-300">
+          </div>
+        </div>
+        
         <button class="relative bg-gradient-to-b from-[#2f5fa8] to-[#0c2957] text-white px-6 py-2 
-                   rounded-xl font-semibold border border-[#1b3e75]
-                   shadow-[0_4px_10px_rgba(0,0,30,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]
-                   hover:scale-105 hover:shadow-[0_0_20px_rgba(70,150,255,0.7)]
-                   transition-all duration-300 ease-in-out overflow-hidden group">
-            <span class="relative z-10">Join</span>
-              <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
-                    translate-x-[-100%] group-hover:translate-x-[100%] 
-                    transition-transform duration-700"></span>
+                     rounded-xl font-semibold border border-[#1b3e75]
+                     shadow-[0_4px_10px_rgba(0,0,30,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)] 
+                     overflow-hidden group w-full mt-auto">
+          <span class="relative z-10" id="createButton">Create Tournament</span>
         </button>
+      </div>
     </div>
 
+    
+    <!-- Overlay dan konten modal -->
+    <div id="modal" class="hidden fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+      <div class="bg-white rounded-2xl p-6 w-96 shadow-lg relative animate-scaleIn">
+        <button id="closeModal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-800 text-xl">&times;</button>
+        
+        <h2 class="text-xl font-semibold text-gray-800 mb-2">Judul Popup</h2>
+        <p class="text-gray-600 mb-4">Tes Pop UP</p>
+        
+        <button id="closeModal2" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+          Tutup
+        </button>
+      </div>
+    </div>
 
-  </main>
+    <!-- My Tournaments Section -->
+    <div class="animate-slideInRight delay-400 flex-1">
+      <div class="border border-[#6aa8fa]/50 bg-gradient-to-b from-white/10 to-[#1b2e4a]/30 
+                  rounded-2xl h-full p-6 backdrop-blur-md shadow-[0_0_15px_rgba(70,150,255,0.3)] flex flex-col">
+        <h2 class="font-semibold text-[#cfe4ff] mb-4 text-xl drop-shadow-sm tracking-wide">
+          🏆 My Tournaments
+        </h2>
+        
+        <div class="flex-1 space-y-3 text-blue-100 text-sm overflow-y-auto pr-2 max-h-[400px]">
+          <!-- Tournament items tetap sama -->
+          <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-3 flex justify-between items-center 
+                      hover:bg-white/10 transition group">
+            <div>
+              <p class="font-semibold text-white" id="tournament-title">Fast Tournament Competition</p>
+              <p class="text-xs text-blue-200">Code: <span class="font-mono bg-black/20 px-1 rounded">FTC2025</span></p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-green-300 bg-green-500/20 border border-green-400/50 px-2 py-0.5 rounded-full">Active</span>
+              <button class="text-xs text-yellow-300 opacity-0 group-hover:opacity-100 transition">Edit</button>
+            </div>
+          </div>
+          <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-3 flex justify-between items-center 
+                      hover:bg-white/10 transition group">
+            <div>
+              <p class="font-semibold text-white" id="tournament-title">Fast Tournament Competition</p>
+              <p class="text-xs text-blue-200">Code: <span class="font-mono bg-black/20 px-1 rounded">FTC2025</span></p>
+            </div>
+            <div class="flex items-center gap-2">
+              <span class="text-xs font-bold text-green-300 bg-green-500/20 border border-green-400/50 px-2 py-0.5 rounded-full">Active</span>
+              <button class="text-xs text-yellow-300 opacity-0 group-hover:opacity-100 transition">Edit</button>
+            </div>
+          </div>
+
+          <!-- Item tournament lainnya... -->
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</main>
 
   <!-- Footer -->
   <footer class="flex justify-between items-end animate-slideInUp delay-500 z-10">
@@ -254,9 +287,32 @@
       const maxLength = "20";
 
       if(textElement.textContent.length > maxLength ){
-        textElement.textContent = 
-          textElement.textContent.substring(0,maxLength) + "...";
+        textElement.textContent = textElement.textContent.substring(0,maxLength) + "...";
       }
+
+      const modal = document.getElementById('modal');
+      const openModal = document.getElementById('createButton');
+      const closeModal = document.getElementById('closeModal');
+      const closeModal2 = document.getElementById('closeModal2');
+
+      openModal.addEventListener('click', () => {
+        modal.classList.remove('hidden');
+      });
+
+      closeModal.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+
+      closeModal2.addEventListener('click', () => {
+        modal.classList.add('hidden');
+      });
+
+      // Tutup jika klik di luar konten popup
+      window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+          modal.classList.add('hidden');
+        }
+      });
   </script>
 
 </body>
