@@ -74,55 +74,59 @@
   <!-- Main Section -->
   <main class="flex-1 relative flex justify-center items-center z-10">
 
-  <!-- Daftar turnament yang di ikuti -->
-  <div class="absolute top-0 left-0 mt-6 ml-6 animate-slideInLeft delay-200">
-    <div class="border border-[#6aa8fa]/50 bg-gradient-to-b from-white/10 to-[#1b2e4a]/30 
-                rounded-2xl w-60 h-80 p-5 backdrop-blur-md shadow-[0_0_15px_rgba(70,150,255,0.3)] 
-                overflow-hidden">
+    <!-- Daftar turnament yang di ikuti -->
+    <div class="absolute top-0 left-0 mt-6 ml-6 animate-slideInLeft delay-200 md">
+      <div class="border border-[#6aa8fa]/50 bg-gradient-to-b from-white/10 to-[#1b2e4a]/30 
+                  rounded-2xl w-60 h-80 p-5 backdrop-blur-md shadow-[0_0_15px_rgba(70,150,255,0.3)] 
+                  overflow-hidden">
 
-      <!-- Cahaya animasi -->
-      <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
-                  translate-x-[-100%] group-hover:translate-x-[100%] 
-                  transition-transform duration-[1500ms] ease-out"></div>
+        <!-- Cahaya animasi -->
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent 
+                    translate-x-[-100%] group-hover:translate-x-[100%] 
+                    transition-transform duration-[1500ms] ease-out"></div>
 
-      <!-- Judul -->
-      <h2 class="font-semibold text-[#cfe4ff] mb-4 text-lg drop-shadow-sm tracking-wide">
-        🏆  Tournaments
-      </h2>
+        <!-- Judul -->
+        <h2 class="font-semibold text-[#cfe4ff] mb-4 text-lg drop-shadow-sm tracking-wide">
+          🏆  Tournaments
+        </h2>
 
-      <!-- Daftar Turnamen -->
-      <div class="space-y-3 text-blue-100 text-sm">
+        <!-- Daftar Turnamen -->
+        <div class="space-y-3 text-blue-100 text-sm">
 
-        <!-- Item 1 -->
-        <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
-                    hover:bg-white/10 transition">
-          <a href=""><span class="truncate text-white" id="tournament-title">Fast Tournament Competition</span></a>
+          <!-- Item 1 -->
+          <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
+                      hover:bg-white/10 transition">
+            <a href=""><span class="truncate text-white" id="tournament-title">Fast Tournament Competition</span></a>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
+                      hover:bg-white/10 transition">
+            <a href=""><span class="truncate text-white" id="tournament-title">Weekly Battle Arena</span></a>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
+                      hover:bg-white/10 transition">
+            <a href=""><span class="truncate text-white" id="tournament-title">War Masters League</span></a>
+          </div>
+          <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
+                      hover:bg-white/10 transition">
+            <a href=""><span class="truncate text-white" id="tournament-title">War Masters League</span></a>
+          </div>
         </div>
 
-        <!-- Item 2 -->
-        <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
-                    hover:bg-white/10 transition">
-          <a href=""><span>Weekly Battle Arena</span></a>
-        </div>
-
-        <!-- Item 3 -->
-        <div class="bg-white/5 border border-[#6aa8fa]/30 rounded-lg p-2 px-3 flex justify-between items-center 
-                    hover:bg-white/10 transition">
-          <a href=""><span>War Masters League</span></a>
-        </div>
+        <!-- Tombol lihat semua -->
+        <button class="absolute bottom-4 left-1/2 -translate-x-1/2 
+                      bg-gradient-to-b from-[#2f5fa8] to-[#0c2957] text-white 
+                      px-4 py-1.5 rounded-lg text-xs font-semibold border border-[#1b3e75]
+                      shadow-[0_4px_8px_rgba(0,0,30,0.4)]
+                      hover:shadow-[0_0_20px_rgba(70,150,255,0.5)] 
+                      transition-all duration-300">
+          View All
+        </button>
       </div>
-
-      <!-- Tombol lihat semua -->
-      <button class="absolute bottom-4 left-1/2 -translate-x-1/2 
-                    bg-gradient-to-b from-[#2f5fa8] to-[#0c2957] text-white 
-                    px-4 py-1.5 rounded-lg text-xs font-semibold border border-[#1b3e75]
-                    shadow-[0_4px_8px_rgba(0,0,30,0.4)]
-                    hover:shadow-[0_0_20px_rgba(70,150,255,0.5)] 
-                    transition-all duration-300">
-        View All
-      </button>
     </div>
-  </div>
 
 
     <!-- Input Kode Turnamen -->
@@ -137,10 +141,10 @@
 
 
         <button class="relative bg-gradient-to-b from-[#2f5fa8] to-[#0c2957] text-white px-6 py-2 
-                   rounded-xl font-semibold border border-[#1b3e75]
-                   shadow-[0_4px_10px_rgba(0,0,30,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]
-                   hover:scale-105 hover:shadow-[0_0_20px_rgba(70,150,255,0.7)]
-                   transition-all duration-300 ease-in-out overflow-hidden group">
+                    rounded-xl font-semibold border border-[#1b3e75]
+                    shadow-[0_4px_10px_rgba(0,0,30,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]
+                    hover:scale-105 hover:shadow-[0_0_20px_rgba(70,150,255,0.7)]
+                    transition-all duration-300 ease-in-out overflow-hidden group">
             <span class="relative z-10">Join</span>
               <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
                     translate-x-[-100%] group-hover:translate-x-[100%] 
@@ -152,17 +156,69 @@
   </main>
 
   <!-- Footer -->
-  <footer class="flex justify-between items-end animate-slideInUp delay-500 z-10">
-    <!-- Setting -->
-    <button class="flex items-center gap-2 bg-white/10 border border-[#6aa8fa]/40 rounded-xl 
-                   px-4 py-2 text-white font-medium shadow-md hover:bg-white/20 backdrop-blur-sm 
-                   transition transform hover:scale-105">
-      ⚙️ Setting
-    </button>
+  <div class="flex justify-between items-end animate-slideInUp delay-500 z-10 relative" 
+       x-data="{ showSetting: false, volume: 0.5, muted: false }" 
+       x-init="
+          const savedVol = localStorage.getItem('volume');
+          const savedMute = localStorage.getItem('muted');
+          if(savedVol) volume = parseFloat(savedVol);
+          if(savedMute) muted = savedMute === 'true';
+          const audio = document.getElementById('bgMusic');
+          audio.volume = volume;
+          if(!muted) audio.play();
+       ">
 
-    <!-- Top 100 -->
-    <button class="relative bg-gradient-to-b from-[#2f5fa8] to-[#0c2957] text-white px-6 py-2 
-                   rounded-xl font-semibold border border-[#1b3e75]
+    <!-- SETTING BUTTON -->
+    <div class="relative">
+      <button @click="showSetting = !showSetting" 
+              class="flex items-center gap-2 bg-white/10 border border-[#6aa8fa]/40 rounded-xl px-4 py-2 text-white font-medium shadow-md hover:bg-white/20 backdrop-blur-sm transition transform hover:scale-105">
+        ⚙️ Setting
+      </button>
+
+      <!-- DROPDOWN (PERBAIKAN POSISI DAN ANIMASI) -->
+      <div x-show="showSetting" 
+           @click.away="showSetting = false"
+           x-transition:enter="transition ease-out duration-300"
+           x-transition:enter-start="opacity-0 translate-y-3 scale-95"
+           x-transition:enter-end="opacity-100 translate-y-0 scale-100"
+           x-transition:leave="transition ease-in duration-200"
+           x-transition:leave-start="opacity-100 translate-y-0 scale-100"
+           x-transition:leave-end="opacity-0 translate-y-2 scale-95"
+           class="absolute bottom-full mb-4 left-0 w-72 bg-white/95 text-gray-800 rounded-2xl shadow-2xl border border-gray-300/70 
+                  p-5 text-sm backdrop-blur-xl z-30 origin-bottom-left">
+
+          <h3 class="font-semibold text-gray-700 mb-2">🎵 Pengaturan Suara</h3>
+          
+          <!-- Toggle Musik -->
+          <div class="flex justify-between items-center mb-3">
+            <span>Musik</span>
+            <button @click="
+                muted = !muted;
+                const audio = document.getElementById('bgMusic');
+                if(muted){ audio.pause(); } else { audio.play(); }
+                localStorage.setItem('muted', muted);
+              "
+              class="px-3 py-1 rounded-md font-semibold transition"
+              :class="muted ? 'bg-red-500 text-white' : 'bg-green-500 text-white'">
+              <span x-text="muted ? 'Mati' : 'Hidup'"></span>
+            </button>
+          </div>
+
+          <!-- Slider Volume -->
+          <label class="block mb-1 text-gray-700 font-medium">Volume</label>
+          <input type="range" min="0" max="1" step="0.01" x-model="volume"
+                 @input="
+                    const audio = document.getElementById('bgMusic');
+                    audio.volume = volume;
+                    localStorage.setItem('volume', volume);
+                 "
+                 class="w-full accent-blue-600 cursor-pointer">
+      </div>
+    </div>
+
+    <!-- TOP 100 -->
+    <button class="relative bg-gradient-to-b from-[#2f5fa8] to-[#0c2957] text-white px-6 py-2 rounded-xl font-semibold 
+                   border border-[#1b3e75]
                    shadow-[0_4px_10px_rgba(0,0,30,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]
                    hover:scale-105 hover:shadow-[0_0_20px_rgba(70,150,255,0.7)]
                    transition-all duration-300 ease-in-out overflow-hidden group">
@@ -171,7 +227,8 @@
                     translate-x-[-100%] group-hover:translate-x-[100%] 
                     transition-transform duration-700"></span>
     </button>
-  </footer>
+  </div>
+
 
   <!-- Efek Cahaya -->
   <div class="absolute right-8 bottom-6 w-4 h-4 rounded-full bg-white/80 blur-[2px] 
