@@ -81,7 +81,7 @@
         x-transition:leave-end="-translate-x-full"
         class="fixed top-0 left-0 h-screen w-64 bg-[#0b1120]/100 text-white shadow-2xl flex flex-col pt-5 pb-5 pl-5 pr-10 space-y-4 md:border-r md:border-[#6aa8fa]/30 backdrop-blur-none md:backdrop-blur-md pointer-events-auto isolate"
         style="background-color: #0b1120 !important; backdrop-filter: none !important; -webkit-backdrop-filter: none !important; z-index:2147483647;">
-        <h2 class="text-2xl font-bold mb-4 border-b border-gray-600 pb-2">Menu</h2>
+        <h2 class="text-2xl font-bold mb-4 border-b border-gray-600 pb-2 mt-5">Menu</h2>
 
         <!-- Close button -->
         <button @click="open=false" aria-label="Close menu" class="absolute top-3 right-3 p-2 rounded-md bg-white/10 hover:bg-white/20 text-white focus:outline-none focus:ring-2 focus:ring-blue-400">
