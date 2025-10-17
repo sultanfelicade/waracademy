@@ -37,3 +37,19 @@ Route::get('/tournament', function () {
     }
     return view('siswa.tournament');
 })->name('tournament');
+
+// Route Guru 
+Route::get('/guru/home', function () {
+    if (!session()->has('pengguna_id')) {
+        return redirect()->route('login');
+    }
+    return view('guru.home', ['username' => session('pengguna_username')]);
+})->name('guru.home');
+
+Route::get('/guru/tournament',function(){
+    if (!session()->has('pengguna_id')) {
+        return redirect()->route('login');
+    }
+    return view('guru.tournament');
+})->name('guru.tournament');
+
