@@ -24,6 +24,9 @@
 
 <body class="font-poppins relative bg-gradient-to-b from-[#0f1b2e] via-[#304863] to-[#3b5875] min-h-screen flex flex-col justify-between p-6 text-white overflow-hidden select-none">
 
+  {{-- Sidebar Hamburger --}}
+  @include('siswa.sidebar')
+
   <!-- MUSIC BACKGROUND -->
   <audio id="bgMusic" loop>
       <source src="/audio/sound.mp3" type="audio/mpeg">
@@ -131,7 +134,7 @@
         ⚙️ Setting
       </button>
 
-      <!-- DROPDOWN (PERBAIKAN POSISI DAN ANIMASI) -->
+      <!-- DROPDOWN -->
       <div x-show="showSetting" 
            @click.away="showSetting = false"
            x-transition:enter="transition ease-out duration-300"
@@ -153,9 +156,9 @@
                 const audio = document.getElementById('bgMusic');
                 if(muted){ audio.pause(); } else { audio.play(); }
                 localStorage.setItem('muted', muted);
-              "
-              class="px-3 py-1 rounded-md font-semibold transition"
-              :class="muted ? 'bg-red-500 text-white' : 'bg-green-500 text-white'">
+             "
+             class="px-3 py-1 rounded-md font-semibold transition"
+             :class="muted ? 'bg-red-500 text-white' : 'bg-green-500 text-white'">
               <span x-text="muted ? 'Mati' : 'Hidup'"></span>
             </button>
           </div>
@@ -174,10 +177,10 @@
 
     <!-- TOP 100 -->
     <button class="relative bg-gradient-to-b from-[#2f5fa8] to-[#0c2957] text-white px-6 py-2 rounded-xl font-semibold 
-                   border border-[#1b3e75]
-                   shadow-[0_4px_10px_rgba(0,0,30,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]
-                   hover:scale-105 hover:shadow-[0_0_20px_rgba(70,150,255,0.7)]
-                   transition-all duration-300 ease-in-out overflow-hidden group">
+                  border border-[#1b3e75]
+                  shadow-[0_4px_10px_rgba(0,0,30,0.5),inset_0_1px_1px_rgba(255,255,255,0.2)]
+                  hover:scale-105 hover:shadow-[0_0_20px_rgba(70,150,255,0.7)]
+                  transition-all duration-300 ease-in-out overflow-hidden group">
       <span class="relative z-10">🏆 Top 100</span>
       <span class="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent 
                     translate-x-[-100%] group-hover:translate-x-[100%] 
@@ -185,7 +188,7 @@
     </button>
   </div>
 
-  <!-- Cahaya kecil di sudut kanan bawah -->
+  <!-- Cahaya kecil -->
   <div class="absolute right-8 bottom-6 w-4 h-4 rounded-full bg-white/80 blur-[2px] shadow-[0_0_25px_rgba(255,255,255,0.6)] animate-pulseLight"></div>
 
   <!-- STYLE ANIMASI -->
