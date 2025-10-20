@@ -3,6 +3,8 @@ use App\Http\Controllers\AuthController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\LevelController;
 
+use App\Http\Controllers\ProfileController;
+
 Route::get('/', function () {
     return view('landing'); // pastikan file resources/views/landing.blade.php ada
 })->name('landing');
@@ -24,6 +26,8 @@ Route::get('/home', function () {
     }
     return view('siswa.home', ['username' => session('pengguna_username')]);
 })->name('home');
+//profile
+Route::get('/profil/{id}', [ProfileController::class, 'show'])->name('profil.show');
 
 // Route::get('/level', function () {
 //     if (!session()->has('pengguna_id')) {
