@@ -37,7 +37,7 @@ class LevelController extends Controller
         }
 
         // ambil satu kisi (kalau per level cuma ada satu kisi)
-        $kisi = $level->kisiKisi->first();
+        $kisi = $level->KisiKisi->first();
 
         // kalau nanti mau looping semua, bisa juga pakai $kisiList = $level->kisiKisi;
         return view('siswa.levels.preview', [
