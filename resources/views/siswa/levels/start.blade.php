@@ -580,7 +580,8 @@
       quizBox.style.display = "block";
       timerDiv.style.display = "flex";
       showQuestion(current);
-      satartTimer();
+      startTimer();
+      
       const bgMusic = document.getElementById("bgMusic");
       bgMusic.play().catch(() => {
         console.error("Audio gagal diputar.");
