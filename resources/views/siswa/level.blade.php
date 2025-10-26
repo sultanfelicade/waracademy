@@ -7,6 +7,7 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Poppins:wght@400;600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
   <script>
     tailwind.config = {
       theme: {
@@ -19,83 +20,6 @@
       }
     }
   </script>
-
-<script type="module">
-  import { initMusic, fadeInMusic, fadeOutMusic } from '/js/music.js';
-
-  // Inisialisasi musik
-  const music = initMusic('/audio/classical.mp3'); // Ganti dengan audio yang diinginkan
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const audio = document.getElementById('bgMusic');
-    const savedVol = localStorage.getItem('volume');
-    const savedMute = localStorage.getItem('muted');
-    const volume = savedVol ? parseFloat(savedVol) : 0.6;
-    const muted = savedMute === 'true';
-    audio.volume = 0; // Mulai fade-in dari 0
-
-    // Fungsi fade-in audio
-    function fadeInAudio(audio, duration = 2000) {
-      const step = 50;
-      const fadeAmount = volume / (duration / step);
-      const fadeInterval = setInterval(() => {
-        if (audio.volume + fadeAmount < volume) {
-          audio.volume += fadeAmount;
-        } else {
-          audio.volume = volume;
-          clearInterval(fadeInterval);
-        }
-      }, step);
-    }
-
-    // Fungsi fade-out audio
-    function fadeOutAudio(audio, duration = 1500, callback) {
-      const step = 50;
-      const fadeAmount = audio.volume / (duration / step);
-      const fadeInterval = setInterval(() => {
-        if (audio.volume - fadeAmount > 0) {
-          audio.volume -= fadeAmount;
-        } else {
-          audio.volume = 0;
-          clearInterval(fadeInterval);
-          audio.pause();
-          if (callback) callback();
-        }
-      }, step);
-    }
-
-    // Mulai fade-in saat halaman load
-    if (!muted) {
-      audio.play().then(() => fadeInAudio(audio, 2000)).catch(() => {});
-    }
-
-    // Efek fade-out untuk semua link keluar
-    document.querySelectorAll('a[href]').forEach(link => {
-      link.addEventListener('click', e => {
-        const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript')) return;
-
-        e.preventDefault();
-        fadeOutAudio(audio, 1500, () => {
-          window.location.href = href; // Arahkan ke link setelah fade-out
-        });
-      });
-    });
-
-    // Efek fade-out untuk level dan trofi
-    document.querySelectorAll('.level-dot, .trophy-icon').forEach(dot => {
-      dot.addEventListener('click', e => {
-        e.preventDefault(); // Mencegah klik default
-        const targetUrl = dot.getAttribute('onclick')?.match(/'(.*?)'/)?.[1] 
-                         || dot.dataset.href 
-                         || dot.href 
-                         || dot.getAttribute('onclick')
-                         || e.target.getAttribute('onclick');
-        fadeOutAudio(audio, 1500, () => window.location.href = targetUrl);
-      });
-    });
-  });
-</script>
 
   <style>
     body {
@@ -189,13 +113,14 @@
 
 <body class="bg-gradient-to-b from-[#0f1b2e] via-[#243b55] to-[#3b5875] min-h-screen text-white">
   <audio id="bgMusic" loop>
-      <source src="/audio/classical.mp3" type="audio/mpeg">
+    <source src="/audio/classical.mp3" type="audio/mpeg">
   </audio>
+
   <canvas id="particles" class="absolute inset-0 z-0"></canvas>
+
   <img src="/images/war.png" alt="Logo"
        style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1.5);
               height:300px;opacity:0.05;pointer-events:none;z-index:0;mix-blend-mode:lighten;">
-
 
   <h1 class="text-center text-5xl font-blackops mt-10 mb-6
              bg-gradient-to-b from-[#e5f2ff] via-[#a3d3fa] to-[#6aa8fa]
@@ -228,7 +153,6 @@
              S 1300,250 1400,150"
           stroke="transparent" fill="none"/>
 
-    <!-- Garis neon yang dimulai dari level 1 dan berhenti sebelum trofi -->
     <path id="visiblePath" class="neon-path" fill="none"/>
 
     <circle class="light-dot">
@@ -243,100 +167,155 @@
   <a class="back-btn" href="{{ route('home') }}">⬅ Kembali</a>
 
   <script>
-  const fullPath = document.getElementById('fullPath');
-  const visiblePath = document.getElementById('visiblePath');
-  const pathLength = fullPath.getTotalLength();
-  const numLevels = 20;
-  const levelsGroup = document.getElementById('levels');
+  window.addEventListener('DOMContentLoaded', () => {
+    const audio = document.getElementById('bgMusic');
+    const savedVol = localStorage.getItem('volume');
+    const savedMute = localStorage.getItem('muted');
+    const volume = savedVol ? parseFloat(savedVol) : 0.6;
+    const muted = savedMute === 'true';
+    audio.volume = 0;
 
-  // contoh hasil skor -> jumlah bintang
-  const levelStars = {
-    1: 3, // level 1: 2 bintang aktif
-    2: 2,
-    3: 0,
-  };
-
-  // potong path untuk garis neon
-  const level1T = 1 / (numLevels + 1);
-  const startFrom = pathLength * level1T;
-  const endBeforeTrophy = pathLength * 0.975;
-  const steps = 300;
-  let d = `M ${fullPath.getPointAtLength(startFrom).x},${fullPath.getPointAtLength(startFrom).y}`;
-  for (let i = 1; i <= steps; i++) {
-    const l = startFrom + (endBeforeTrophy - startFrom) * (i / steps);
-    const p = fullPath.getPointAtLength(l);
-    d += ` L ${p.x},${p.y}`;
-  }
-  visiblePath.setAttribute('d', d);
-
-  // generate setiap level
-  for (let i = 0; i < numLevels; i++) {
-    const levelNum = i + 1;
-    const t = levelNum / (numLevels + 1);
-    const pos = fullPath.getPointAtLength(pathLength * t);
-
-    const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
-
-    // lingkaran level
-    const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
-    c.setAttribute('class', 'level-dot');
-    c.setAttribute('cx', pos.x);
-    c.setAttribute('cy', pos.y);
-    c.setAttribute('r', 22);
-    c.addEventListener('click', () => window.location.href = `/level/${levelNum}`);
-
-    // teks nomor level
-    const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-    txt.setAttribute('x', pos.x);
-    txt.setAttribute('y', pos.y + 6);
-    txt.setAttribute('text-anchor', 'middle');
-    txt.setAttribute('class', 'level-text');
-    txt.textContent = levelNum;
-
-    // buat elemen foreignObject untuk menaruh HTML bintang Font Awesome
-    const fObj = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
-    fObj.setAttribute('x', pos.x - 40);
-    fObj.setAttribute('y', pos.y - 60); // posisi di atas lingkaran
-    fObj.setAttribute('width', 80);
-    fObj.setAttribute('height', 30);
-    fObj.setAttribute('pointer-events', 'none');
-
-    // buat HTML container bintang
-    const starsDiv = document.createElement('div');
-    starsDiv.style.display = 'flex';
-    starsDiv.style.justifyContent = 'center';
-    starsDiv.style.gap = '6px';
-    starsDiv.style.fontSize = '16px';
-
-    // jumlah bintang aktif
-    const activeStars = levelStars[levelNum] || 0;
-
-    for (let s = 0; s < 3; s++) {
-      const star = document.createElement('i');
-      star.classList.add('fa-star');
-      star.classList.add('fa-solid');
-      star.style.color = s < activeStars ? '#facc15' : '#9ca3af';
-      star.style.filter = s < activeStars ? 'drop-shadow(0 0 5px rgba(250,204,21,0.8))' : 'none';
-      starsDiv.appendChild(star);
+    function fadeInAudio(audio, duration = 2000) {
+      const step = 50;
+      const fadeAmount = volume / (duration / step);
+      const fadeInterval = setInterval(() => {
+        if (audio.volume + fadeAmount < volume) {
+          audio.volume += fadeAmount;
+        } else {
+          audio.volume = volume;
+          clearInterval(fadeInterval);
+        }
+      }, step);
     }
 
-    fObj.appendChild(starsDiv);
-    g.appendChild(fObj);
-    g.appendChild(c);
-    g.appendChild(txt);
-    levelsGroup.appendChild(g);
-  }
+    function fadeOutAudio(audio, duration = 1500, callback) {
+      const step = 50;
+      const fadeAmount = audio.volume / (duration / step);
+      const fadeInterval = setInterval(() => {
+        if (audio.volume - fadeAmount > 0) {
+          audio.volume -= fadeAmount;
+        } else {
+          audio.volume = 0;
+          clearInterval(fadeInterval);
+          audio.pause();
+          if (callback) callback();
+        }
+      }, step);
+    }
 
-  // trofi akhir
-  const trophyPos = fullPath.getPointAtLength(pathLength * 0.99);
-  const trophy = document.createElementNS('http://www.w3.org/2000/svg', 'text');
-  trophy.setAttribute('x', trophyPos.x);
-  trophy.setAttribute('y', trophyPos.y + 10);
-  trophy.setAttribute('class', 'trophy-icon');
-  trophy.textContent = '🏆';
-  trophy.addEventListener('click', () => window.location.href = "{{ route('tournament') }}");
-  levelsGroup.appendChild(trophy);
+    if (!muted) {
+      audio.play().then(() => fadeInAudio(audio, 2000)).catch(() => {});
+    }
+
+    // Efek fade-out untuk semua link keluar
+    document.querySelectorAll('a[href]').forEach(link => {
+      link.addEventListener('click', e => {
+        const href = link.getAttribute('href');
+        if (!href || href.startsWith('#') || href.startsWith('javascript')) return;
+
+        e.preventDefault();
+        fadeOutAudio(audio, 1500, () => {
+          window.location.href = href;
+        });
+      });
+    });
+
+    // ===================
+    //  PETA LEVEL
+    // ===================
+    const fullPath = document.getElementById('fullPath');
+    const visiblePath = document.getElementById('visiblePath');
+    const pathLength = fullPath.getTotalLength();
+    const numLevels = 20;
+    const levelsGroup = document.getElementById('levels');
+
+    const levelStars = { 1: 3, 2: 2, 3: 0 };
+
+    const level1T = 1 / (numLevels + 1);
+    const startFrom = pathLength * level1T;
+    const endBeforeTrophy = pathLength * 0.975;
+    const steps = 300;
+    let d = `M ${fullPath.getPointAtLength(startFrom).x},${fullPath.getPointAtLength(startFrom).y}`;
+    for (let i = 1; i <= steps; i++) {
+      const l = startFrom + (endBeforeTrophy - startFrom) * (i / steps);
+      const p = fullPath.getPointAtLength(l);
+      d += ` L ${p.x},${p.y}`;
+    }
+    visiblePath.setAttribute('d', d);
+
+    // generate level
+    for (let i = 0; i < numLevels; i++) {
+      const levelNum = i + 1;
+      const t = levelNum / (numLevels + 1);
+      const pos = fullPath.getPointAtLength(pathLength * t);
+
+      const g = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+
+      // lingkaran level
+      const c = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+      c.setAttribute('class', 'level-dot');
+      c.setAttribute('cx', pos.x);
+      c.setAttribute('cy', pos.y);
+      c.setAttribute('r', 22);
+      c.addEventListener('click', () => {
+        fadeOutAudio(audio, 1500, () => {
+          window.location.href = `/level/${levelNum}`;
+        });
+      });
+
+      // teks nomor level
+      const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+      txt.setAttribute('x', pos.x);
+      txt.setAttribute('y', pos.y + 6);
+      txt.setAttribute('text-anchor', 'middle');
+      txt.setAttribute('class', 'level-text');
+      txt.textContent = levelNum;
+
+      // bintang
+      const fObj = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject');
+      fObj.setAttribute('x', pos.x - 40);
+      fObj.setAttribute('y', pos.y - 60);
+      fObj.setAttribute('width', 80);
+      fObj.setAttribute('height', 30);
+      fObj.setAttribute('pointer-events', 'none');
+
+      const starsDiv = document.createElement('div');
+      starsDiv.style.display = 'flex';
+      starsDiv.style.justifyContent = 'center';
+      starsDiv.style.gap = '6px';
+      starsDiv.style.fontSize = '16px';
+
+      const activeStars = levelStars[levelNum] || 0;
+
+      for (let s = 0; s < 3; s++) {
+        const star = document.createElement('i');
+        star.classList.add('fa-star', 'fa-solid');
+        star.style.color = s < activeStars ? '#facc15' : '#9ca3af';
+        star.style.filter = s < activeStars ? 'drop-shadow(0 0 5px rgba(250,204,21,0.8))' : 'none';
+        starsDiv.appendChild(star);
+      }
+
+      fObj.appendChild(starsDiv);
+      g.appendChild(fObj);
+      g.appendChild(c);
+      g.appendChild(txt);
+      levelsGroup.appendChild(g);
+    }
+
+    // trofi akhir
+    const trophyPos = fullPath.getPointAtLength(pathLength * 0.99);
+    const trophy = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+    trophy.setAttribute('x', trophyPos.x);
+    trophy.setAttribute('y', trophyPos.y + 10);
+    trophy.setAttribute('class', 'trophy-icon');
+    trophy.textContent = '🏆';
+    trophy.addEventListener('click', () => {
+      fadeOutAudio(audio, 1500, () => {
+        window.location.href = "{{ route('tournament') }}";
+      });
+    });
+    levelsGroup.appendChild(trophy);
+  });
   </script>
-
 </body>
 </html>

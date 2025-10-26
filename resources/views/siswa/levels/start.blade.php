@@ -373,7 +373,8 @@
   <canvas id="particles"></canvas>
   <img src="{{ asset('images/war.png') }}" alt="Logo" class="logo-bg">
 
-  <div class="timer" id="timer"><span id="countdown">05:00</span></div>
+  
+  <div class="timer" id="timer"><span id="countdown">00:00</span></div>
   <div id="countdownStart" class="start-countdown"></div>
 
   <div id="quiz" class="soal-container">
@@ -411,13 +412,9 @@
   </div>
 
   <script>
-    const soalData = [
-      { q: "Siapa tokoh utama dalam kisah “War of Light”?", a: ["A. Arion","B. Zephyr","C. Liora","D. Nox"], correct: "B" },
-      { q: "Apa fungsi utama dari item “Energy Core”?", a: ["A. Menambah kekuatan serangan","B. Memulihkan energi","C. Menambah kecepatan","D. Menyerap damage"], correct: "B" },
-      { q: "Elemen apa yang paling kuat melawan elemen “Void”?", a: ["A. Air","B. Cahaya","C. Api","D. Angin"], correct: "B" },
-      { q: "Berapa durasi maksimal mode “Overdrive”?", a: ["A. 15 detik","B. 20 detik","C. 25 detik","D. 30 detik"], correct: "D" },
-      { q: "Siapa komandan tertinggi dari pasukan WarAcademy?", a: ["A. General Kora","B. Captain Finn","C. Master Lethos","D. Lord Draven"], correct: "A" }
-    ];
+    // Ambil data dari controller (Laravel)
+    const soalData = @json($soalData);
+    const durasiLevel = {{ $durasiLevel }};
 
     const quizBox = document.getElementById("quiz");
     const questionBox = document.getElementById("questionBox");
@@ -429,27 +426,41 @@
     const resultDetail = document.getElementById("resultDetail");
     const starContainer = document.getElementById("starContainer");
     const expResult = document.getElementById("expResult");
+    const resultSummary = document.getElementById("resultSummary");
 
     let current = 0;
     let answers = {};
     let correctCount = 0;
-    let timeLeft = 5 * 60; // 5 menit
+    let timeLeft = durasiLevel;
+    let timer;
 
+    // === TAMPILKAN SOAL ===
     function showQuestion(index) {
       const soal = soalData[index];
+
       questionBox.innerHTML = `
         <p class="question">#${index + 1}. ${soal.q}</p>
         <div class="options-container">
-          ${soal.a.map((opt, i) => `<div class="option-card" data-value="${String.fromCharCode(65+i)}">${opt}</div>`).join("")}
-        </div>`;
-      
+          ${soal.a
+            .map(
+              (opt, i) =>
+                `<div class="option-card" data-value="${opt}">
+                  ${String.fromCharCode(65 + i)}. ${opt}
+                </div>`
+            )
+            .join("")}
+        </div>
+      `;
+
       nextBtn.style.display = "none";
       questionBox.classList.remove("slide-out");
-      questionBox.classList.add("slide-in"); // <--- Tambahkan ini
+      questionBox.classList.add("slide-in");
 
-      document.querySelectorAll('.option-card').forEach(card => {
+      document.querySelectorAll(".option-card").forEach((card) => {
         card.addEventListener("click", () => {
-          document.querySelectorAll('.option-card').forEach(c => c.classList.remove("selected"));
+          document
+            .querySelectorAll(".option-card")
+            .forEach((c) => c.classList.remove("selected"));
           card.classList.add("selected");
           answers[current] = card.dataset.value;
           nextBtn.style.display = "inline-block";
@@ -457,103 +468,112 @@
       });
     }
 
-    nextBtn.addEventListener("click", () => {
-    const currentBox = questionBox;
-    
-    // Tambahkan efek keluar pada soal sekarang
-    currentBox.classList.remove("slide-in");
-    currentBox.classList.add("slide-out");
+    // === HASIL QUIZ ===
+    function showResult() {
+      quizBox.style.display = "none";
+      timerDiv.style.display = "none";
+      resultBox.style.display = "flex";
 
-    // Suara efek transisi (opsional)
-    const whoosh = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_3b77a0db25.mp3");
-    whoosh.volume = 0.3;
-    whoosh.play().catch(()=>{});
+      // Hitung skor benar
+      correctCount = soalData.filter(
+        (s, i) => answers[i] === s.correct
+      ).length;
 
-    // Setelah animasi keluar selesai (600ms), ganti soal
-    setTimeout(() => {
+      // Update ringkasan
+      const total = soalData.length;
+      resultSummary.textContent = `Kamu menjawab ${correctCount} dari ${total} soal dengan benar!`;
+
+      // Evaluasi per soal
+      resultDetail.innerHTML = soalData
+        .map((s, i) => {
+          const isCorrect = answers[i] === s.correct;
+          return `
+            <p class="mb-2 ${isCorrect ? "text-green-400" : "text-red-400"}">
+              <span class="font-semibold">#${i + 1}</span> ${s.q}<br>
+              <span class="text-sm text-gray-300">
+                Jawabanmu: ${answers[i] || "-"} | Benar: ${s.correct}
+              </span>
+            </p>`;
+        })
+        .join('<hr class="my-2 border-gray-700 opacity-40">');
+
+      // Hitung bintang
+      let stars = 0;
+      if (correctCount >= 5) stars = 3;
+      else if (correctCount >= 3) stars = 2;
+      else if (correctCount >= 1) stars = 1;
+
+      // Tampilkan bintang aktif & mati
+      starContainer.innerHTML = "";
+      for (let i = 1; i <= 3; i++) {
+        const starEl = document.createElement("span");
+        starEl.classList.add("star");
+        if (i > stars) starEl.classList.add("inactive");
+        starEl.textContent = "★";
+        starContainer.appendChild(starEl);
+      }
+
+      // EXP
+      const exp = Math.round(timeLeft * 2);
+      expResult.textContent = `🔥 Sisa waktu dikonversi menjadi +${exp} EXP`;
+
+      // Tombol aksi
+      const restartBtn = document.getElementById("restartBtn");
+      const nextLevelBtn = document.getElementById("nextLevelBtn");
+
+      restartBtn.style.display = stars < 3 ? "inline-block" : "none";
+
+      restartBtn.onclick = () => {
+        location.reload();
+      };
+
+      nextLevelBtn.onclick = () => {
+        const form = document.createElement("form");
+        form.method = "POST";
+        form.action = "{{ route('level.submit', $id) }}";
+        form.innerHTML = `@csrf
+          <input type="hidden" name="jawaban" value='${JSON.stringify(answers)}'>
+          <input type="hidden" name="benar" value="${correctCount}">
+          <input type="hidden" name="exp" value="${exp}">`;
+        document.body.appendChild(form);
+        form.submit();
+      };
+    }
+
+    // === TIMER BERDASARKAN LEVEL ===
+    function startTimer() {
+      timeLeft = durasiLevel;
+      timerDiv.style.display = "flex";
+
+      timer = setInterval(() => {
+        const minutes = Math.floor(timeLeft / 60);
+        const seconds = timeLeft % 60;
+        timerDisplay.textContent = `${minutes
+          .toString()
+          .padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+
+        if (timeLeft <= 0) {
+          clearInterval(timer);
+          alert("⏰ Waktu untuk level ini habis!");
+          showResult();
+        }
+        timeLeft--;
+      }, 1000);
+    }
+
+    // Tombol "Selanjutnya"
+    nextBtn.onclick = () => {
       current++;
       if (current < soalData.length) {
-        showQuestion(current);
-        currentBox.classList.remove("slide-out");
-        currentBox.classList.add("slide-in");
+        questionBox.classList.add("slide-out");
+        setTimeout(() => showQuestion(current), 400);
       } else {
+        clearInterval(timer);
         showResult();
       }
-    }, 600);
-  });
+    };
 
-    function showResult() {
-  quizBox.style.display = "none";
-  timerDiv.style.display = "none";
-  resultBox.style.display = "flex";
-
-  // Hitung skor benar
-  correctCount = soalData.filter((s, i) => answers[i] === s.correct).length;
-  
-  // Update ringkasan
-  const total = soalData.length;
-  resultSummary.textContent = `Kamu menjawab ${correctCount} dari ${total} soal dengan benar!`;
-
-  // Evaluasi per soal
-  resultDetail.innerHTML = soalData.map((s, i) => {
-    const isCorrect = answers[i] === s.correct;
-    return `
-      <p class="mb-2 ${isCorrect ? 'text-green-400' : 'text-red-400'}">
-        <span class="font-semibold">#${i+1}</span> ${s.q}<br>
-        <span class="text-sm text-gray-300">Jawabanmu: ${answers[i] || '-'} | Benar: ${s.correct}</span>
-      </p>`;
-  }).join('<hr class="my-2 border-gray-700 opacity-40">');
-
-  // Hitung bintang
-  let stars = 0;
-  if (correctCount >= 5) stars = 3;
-  else if (correctCount >= 3) stars = 2;
-  else if (correctCount >= 1) stars = 1;
-
-  // Tampilkan bintang aktif & mati
-  starContainer.innerHTML = "";
-  for (let i = 1; i <= 3; i++) {
-    const starEl = document.createElement('span');
-    starEl.classList.add('star');
-    if (i > stars) starEl.classList.add('inactive');
-    starEl.textContent = '★';
-    starContainer.appendChild(starEl);
-  }
-
-  // EXP
-  const exp = Math.round(timeLeft * 2);
-  expResult.textContent = `🔥 Sisa waktu dikonversi menjadi +${exp} EXP`;
-  const expBar = document.createElement('div');
-  expBar.className = 'exp-bar';
-  const expFill = document.createElement('div');
-  expFill.className = 'exp-fill';
-  expBar.appendChild(expFill);
-  expResult.insertAdjacentElement('afterend', expBar);
-
-  // Tampilkan tombol
-  const restartBtn = document.getElementById('restartBtn');
-  const nextLevelBtn = document.getElementById('nextLevelBtn');
-
-  restartBtn.style.display = stars < 3 ? "inline-block" : "none";
-
-  restartBtn.onclick = () => {
-    location.reload();
-  };
-
-  nextLevelBtn.onclick = () => {
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = "{{ route('level.submit', $id) }}";
-    form.innerHTML = `@csrf
-      <input type="hidden" name="jawaban" value='${JSON.stringify(answers)}'>
-      <input type="hidden" name="benar" value="${correctCount}">
-      <input type="hidden" name="exp" value="${exp}">`;
-    document.body.appendChild(form);
-    form.submit();
-  };
-}
-
-    // Countdown awal
+    // === COUNTDOWN AWAL ===
     const countdownVals = ["3", "2", "1", "GO!"];
     const beepShort = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
     const beepLong = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_34b52b59cf.mp3");
@@ -567,12 +587,12 @@
 
         if (i < countdownVals.length - 1) {
           beepShort.currentTime = 0;
-          await beepShort.play().catch(()=>{});
-          await new Promise(r => setTimeout(r, 1000));
+          await beepShort.play().catch(() => {});
+          await new Promise((r) => setTimeout(r, 1000));
         } else {
           beepLong.currentTime = 0;
-          await beepLong.play().catch(()=>{});
-          await new Promise(r => setTimeout(r, 1500));
+          await beepLong.play().catch(() => {});
+          await new Promise((r) => setTimeout(r, 1500));
         }
       }
 
@@ -581,7 +601,7 @@
       timerDiv.style.display = "flex";
       showQuestion(current);
       startTimer();
-      
+
       const bgMusic = document.getElementById("bgMusic");
       bgMusic.play().catch(() => {
         console.error("Audio gagal diputar.");
@@ -590,23 +610,9 @@
 
     window.onload = playCountdown;
 
-    function startTimer() {
-      const timer = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerDisplay.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          alert("⏰ Waktu habis! Jawaban dikirim otomatis.");
-          showResult();
-        }
-        timeLeft--;
-      }, 1000);
-    }
-
-    // Partikel
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
+    // === PARTIKEL LATAR ===
+    const canvas = document.getElementById("particles");
+    const ctx = canvas.getContext("2d");
     canvas.width = innerWidth;
     canvas.height = innerHeight;
 
@@ -620,8 +626,8 @@
 
     function drawParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      particles.forEach(p => {
+      ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+      particles.forEach((p) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
         ctx.fill();

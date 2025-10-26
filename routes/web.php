@@ -82,7 +82,6 @@ Route::get('/level/{id}/start', [LevelController::class, 'start'])->name('level.
 Route::post('/level/{id}/submit', [LevelController::class, 'submit'])->name('level.submit');
 
 Route::get('/level/{id}/preview', [LevelController::class, 'preview'])->name('level.preview');
-Route::get('/level/{id}/start', [LevelController::class, 'start'])->name('level.start');
 
 // Halaman soal (ambil dari database)
 Route::get('/level/{id}/start', [LevelController::class, 'start'])->name('level.start');

@@ -14,6 +14,7 @@ class Pertanyaan extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id_pertanyaan',
         'id_level',
         'teks_pertanyaan',
         'gambar',
