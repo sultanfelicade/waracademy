@@ -14,6 +14,7 @@ class Pilihanjawaban extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'id_jawaban',
         'id_pertanyaan',
         'teks_jawaban',
         'adalah_benar',

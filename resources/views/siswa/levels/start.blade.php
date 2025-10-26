@@ -411,13 +411,8 @@
   </div>
 
   <script>
-    const soalData = [
-      { q: "Siapa tokoh utama dalam kisah “War of Light”?", a: ["A. Arion","B. Zephyr","C. Liora","D. Nox"], correct: "B" },
-      { q: "Apa fungsi utama dari item “Energy Core”?", a: ["A. Menambah kekuatan serangan","B. Memulihkan energi","C. Menambah kecepatan","D. Menyerap damage"], correct: "B" },
-      { q: "Elemen apa yang paling kuat melawan elemen “Void”?", a: ["A. Air","B. Cahaya","C. Api","D. Angin"], correct: "B" },
-      { q: "Berapa durasi maksimal mode “Overdrive”?", a: ["A. 15 detik","B. 20 detik","C. 25 detik","D. 30 detik"], correct: "D" },
-      { q: "Siapa komandan tertinggi dari pasukan WarAcademy?", a: ["A. General Kora","B. Captain Finn","C. Master Lethos","D. Lord Draven"], correct: "A" }
-    ];
+    // Ambil soal dari controller (Laravel)
+    const soalData = @json($soalData);
 
     const quizBox = document.getElementById("quiz");
     const questionBox = document.getElementById("questionBox");
