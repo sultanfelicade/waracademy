@@ -18,7 +18,6 @@
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(to bottom, #0f1b2e, #304863 50%, #3b5875);
       color: white;
-      overflow: hidden;
     }
 
     /* Scrollbar */
@@ -205,34 +204,35 @@
   </div>
 
   <!-- KISI-KISI -->
-  <div class="kisi-container space-y-5 float">
-    @php
-      $topikData = json_decode($kisi->topik ?? '[]', true);
-    @endphp
+<div class="kisi-container space-y-5 overflow-y-auto max-h-[500px] p-4">
+    @if($kisi->isNotEmpty())
+        @foreach ($kisi as $item)
+            @php
+                $topikData = json_decode($item->topik ?? '[]', true);
+            @endphp
 
-    @if (!empty($topikData))
-      @foreach ($topikData as $topik)
-        <div class="section">
-          <h2 class="section-title">{{ $topik['nama'] ?? 'Topik Tidak Diketahui' }}</h2>
-          @if (!empty($topik['submateri']))
-            <ul>
-              @foreach ($topik['submateri'] as $sub)
-                <li>{{ $sub }}</li>
-              @endforeach
-            </ul>
-          @endif
-        </div>
-      @endforeach
+            @if(!empty($topikData))
+                @foreach ($topikData as $topik)
+                    <div class="section bg-white/5 p-4 rounded-lg shadow-lg mb-3">
+                        <h3 class="section-title text-lg font-semibold mb-2">{{ $topik['nama'] ?? 'Topik Tidak Diketahui' }}</h3>
+                        @if(!empty($topik['submateri']))
+                            <ul class="list-disc list-inside">
+                                @foreach($topik['submateri'] as $sub)
+                                    <li>{{ $sub }}</li>
+                                @endforeach
+                            </ul>
+                        @endif
+                    </div>
+                @endforeach
+            @else
+            @endif
+        @endforeach
     @else
-      <p class="text-center text-gray-400">Belum ada kisi-kisi untuk level ini.</p>
+        <p class="text-center text-gray-400">Belum ada kisi-kisi untuk semua level.</p>
     @endif
+</div>
 
-    <div class="border-t border-white/10 pt-3 text-gray-300 relative z-10">
-      <p>Jumlah soal: <span class="text-white font-semibold">{{ $kisi->jumlah_soal ?? '-' }}</span></p>
-      <p>Waktu pengerjaan: <span class="text-white font-semibold">{{ $kisi->waktu_menit ?? '-' }} menit</span></p>
-      <p>Jenis soal: <span class="text-white font-semibold">{{ $kisi->jenis_soal ?? '-' }}</span></p>
-    </div>
-  </div>
+
 
   <!-- Tombol Navigasi -->
   <div class="flex justify-center gap-6 mt-8 z-10">

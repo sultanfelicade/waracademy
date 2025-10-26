@@ -381,6 +381,15 @@
     <div id="questionBox"></div>
     <button id="nextBtn" class="btn-next">Selanjutnya ➤</button>
   </div>
+  <div class="fixed top-6 left-6 z-50 flex items-center space-x-2 text-white font-semibold">
+  <label for="volumeControl">🔊 Volume:</label>
+  <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="0.5">
+</div>
+
+<audio id="bgMusic" loop>
+    <source src="/audio/tegang.mp3" type="audio/mpeg">
+    Browser kamu tidak mendukung audio.
+</audio>
 
   <!-- HASIL -->
   <div id="resultBox" class="soal-container relative overflow-hidden">
@@ -403,73 +412,103 @@
         <button id="restartBtn" class="hidden px-6 py-3 rounded-xl bg-gradient-to-r from-blue-700 to-indigo-900 border border-blue-400 text-white font-orbitron uppercase tracking-wide shadow-lg hover:scale-105 transition-all duration-300">
           🔁 Ulangi Level
         </button>
+
         <button id="nextLevelBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-800 border border-green-400 text-white font-orbitron uppercase tracking-wide shadow-lg hover:scale-105 transition-all duration-300">
           ➤ Lanjut Level Berikutnya
         </button>
+
+        <a href="{{ route('level') }}" 
+          class="px-6 py-3 rounded-xl bg-gradient-to-r from-gray-700 to-gray-900 border border-gray-400 text-white font-orbitron uppercase tracking-wide shadow-lg hover:scale-105 transition-all duration-300">
+          ⬅ Kembali ke Level
+        </a>
       </div>
+
     </div>
   </div>
 
-  <script>
-    const soalData = [
-      { q: "Siapa tokoh utama dalam kisah “War of Light”?", a: ["A. Arion","B. Zephyr","C. Liora","D. Nox"], correct: "B" },
-      { q: "Apa fungsi utama dari item “Energy Core”?", a: ["A. Menambah kekuatan serangan","B. Memulihkan energi","C. Menambah kecepatan","D. Menyerap damage"], correct: "B" },
-      { q: "Elemen apa yang paling kuat melawan elemen “Void”?", a: ["A. Air","B. Cahaya","C. Api","D. Angin"], correct: "B" },
-      { q: "Berapa durasi maksimal mode “Overdrive”?", a: ["A. 15 detik","B. 20 detik","C. 25 detik","D. 30 detik"], correct: "D" },
-      { q: "Siapa komandan tertinggi dari pasukan WarAcademy?", a: ["A. General Kora","B. Captain Finn","C. Master Lethos","D. Lord Draven"], correct: "A" }
-    ];
+@php
+    $soalData = [];
 
-    const quizBox = document.getElementById("quiz");
-    const questionBox = document.getElementById("questionBox");
-    const nextBtn = document.getElementById("nextBtn");
-    const timerDiv = document.getElementById("timer");
-    const countdownEl = document.getElementById("countdownStart");
-    const timerDisplay = document.getElementById("countdown");
-    const resultBox = document.getElementById("resultBox");
-    const resultDetail = document.getElementById("resultDetail");
-    const starContainer = document.getElementById("starContainer");
-    const expResult = document.getElementById("expResult");
+    // Pastikan $pertanyaanList dikirim dari controller
+    foreach ($pertanyaanList as $p) {
+        $jawabanTexts = $p->pilihanjawaban->pluck('teks_jawaban')->toArray();
 
-    let current = 0;
-    let answers = {};
-    let correctCount = 0;
-    let timeLeft = 5 * 60; // 5 menit
+        $benarIndex = null;
+        foreach ($p->pilihanjawaban as $k => $j) {
+            if ($j->adalah_benar == 1) {
+                $benarIndex = $k;
+                break;
+            }
+        }
 
-    function showQuestion(index) {
-      const soal = soalData[index];
-      questionBox.innerHTML = `
-        <p class="question">#${index + 1}. ${soal.q}</p>
-        <div class="options-container">
-          ${soal.a.map((opt, i) => `<div class="option-card" data-value="${String.fromCharCode(65+i)}">${opt}</div>`).join("")}
-        </div>`;
-      
-      nextBtn.style.display = "none";
-      questionBox.classList.remove("slide-out");
-      questionBox.classList.add("slide-in"); // <--- Tambahkan ini
-
-      document.querySelectorAll('.option-card').forEach(card => {
-        card.addEventListener("click", () => {
-          document.querySelectorAll('.option-card').forEach(c => c.classList.remove("selected"));
-          card.classList.add("selected");
-          answers[current] = card.dataset.value;
-          nextBtn.style.display = "inline-block";
-        });
-      });
+        $soalData[] = [
+            'q' => $p->teks_pertanyaan,
+            'a' => $jawabanTexts,
+            'correct' => $benarIndex !== null ? chr(65 + $benarIndex) : null,
+        ];
     }
+@endphp
 
-    nextBtn.addEventListener("click", () => {
-    const currentBox = questionBox;
+<script>
+  const soalData = @json($soalData);
+
+  const quizBox = document.getElementById("quiz");
+  const questionBox = document.getElementById("questionBox");
+  const nextBtn = document.getElementById("nextBtn");
+  const timerDiv = document.getElementById("timer");
+  const countdownEl = document.getElementById("countdownStart");
+  const timerDisplay = document.getElementById("countdown");
+  const resultBox = document.getElementById("resultBox");
+  const resultDetail = document.getElementById("resultDetail");
+  const starContainer = document.getElementById("starContainer");
+  const expResult = document.getElementById("expResult");
+  const bgMusic = document.getElementById("bgMusic");
+  const volumeControl = document.getElementById("volumeControl");
+
+  let current = 0;
+  let answers = {};
+  let correctCount = 0;
+  let timeLeft = 5 * 60; // 5 menit
+  let timer = null;
+
+  bgMusic.volume = parseFloat(volumeControl.value);
+  volumeControl.addEventListener("input", () => {
+  bgMusic.volume = parseFloat(volumeControl.value);
+});
+
+
+  function showQuestion(index) {
+    const soal = soalData[index];
+    questionBox.innerHTML = `
+      <p class="question">#${index + 1}. ${soal.q}</p>
+      <div class="options-container">
+        ${soal.a.map((opt, i) => `<div class="option-card" data-value="${String.fromCharCode(65+i)}">${opt}</div>`).join("")}
+      </div>`;
     
-    // Tambahkan efek keluar pada soal sekarang
+    nextBtn.style.display = "none";
+    questionBox.classList.remove("slide-out");
+    questionBox.classList.add("slide-in");
+
+    document.querySelectorAll('.option-card').forEach(card => {
+      card.addEventListener("click", () => {
+        document.querySelectorAll('.option-card').forEach(c => c.classList.remove("selected"));
+        card.classList.add("selected");
+        answers[current] = card.dataset.value;
+        nextBtn.style.display = "inline-block";
+      });
+    });
+  }
+
+  nextBtn.addEventListener("click", () => {
+    const currentBox = questionBox;
+
     currentBox.classList.remove("slide-in");
     currentBox.classList.add("slide-out");
 
-    // Suara efek transisi (opsional)
     const whoosh = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_3b77a0db25.mp3");
     whoosh.volume = 0.3;
     whoosh.play().catch(()=>{});
 
-    // Setelah animasi keluar selesai (600ms), ganti soal
     setTimeout(() => {
       current++;
       if (current < soalData.length) {
@@ -482,19 +521,22 @@
     }, 600);
   });
 
-    function showResult() {
+  function showResult() {
+    if (timer) {
+        clearInterval(timer);
+        timer = null;
+    }
   quizBox.style.display = "none";
   timerDiv.style.display = "none";
   resultBox.style.display = "flex";
 
-  // Hitung skor benar
+  // Hitung jumlah benar
   correctCount = soalData.filter((s, i) => answers[i] === s.correct).length;
-  
-  // Update ringkasan
+
   const total = soalData.length;
   resultSummary.textContent = `Kamu menjawab ${correctCount} dari ${total} soal dengan benar!`;
 
-  // Evaluasi per soal
+  // Detail jawaban
   resultDetail.innerHTML = soalData.map((s, i) => {
     const isCorrect = answers[i] === s.correct;
     return `
@@ -506,11 +548,11 @@
 
   // Hitung bintang
   let stars = 0;
-  if (correctCount >= 5) stars = 3;
-  else if (correctCount >= 3) stars = 2;
+  if (correctCount >= 7) stars = 3;
+  else if (correctCount >= 4) stars = 2;
   else if (correctCount >= 1) stars = 1;
 
-  // Tampilkan bintang aktif & mati
+  // Tampilkan bintang
   starContainer.innerHTML = "";
   for (let i = 1; i <= 3; i++) {
     const starEl = document.createElement('span');
@@ -520,9 +562,25 @@
     starContainer.appendChild(starEl);
   }
 
-  // EXP
-  const exp = Math.round(timeLeft * 2);
-  expResult.textContent = `🔥 Sisa waktu dikonversi menjadi +${exp} EXP`;
+  // Hitung waktu pengerjaan
+  const duration = (5 * 60) - timeLeft; // detik
+  const minutes = Math.floor(duration / 60);
+  const seconds = duration % 60;
+
+  // Hitung EXP
+  let exp = 0;
+  if (stars === 2) {
+    // 2 bintang → EXP proporsional (contoh: 50–100)
+    exp = correctCount * 10 + Math.round(timeLeft * 0.5);
+  } else if (stars === 3) {
+    // 3 bintang → EXP lebih tinggi
+    exp = correctCount * 15 + Math.round(timeLeft * 1);
+  }
+  // stars 1 → 0 EXP
+
+  expResult.textContent = `⌛ Waktu pengerjaan: ${minutes} menit ${seconds} detik | 🔥 EXP: +${exp}`;
+
+  // Tambahkan bar EXP
   const expBar = document.createElement('div');
   expBar.className = 'exp-bar';
   const expFill = document.createElement('div');
@@ -530,109 +588,132 @@
   expBar.appendChild(expFill);
   expResult.insertAdjacentElement('afterend', expBar);
 
-  // Tampilkan tombol
+  // Tombol restart & next level
   const restartBtn = document.getElementById('restartBtn');
   const nextLevelBtn = document.getElementById('nextLevelBtn');
+  const currentLevelId = {{ $id }};
 
-  restartBtn.style.display = stars < 3 ? "inline-block" : "none";
+restartBtn.style.display = "inline-block";
 
-  restartBtn.onclick = () => {
-    location.reload();
-  };
+  restartBtn.onclick = () => location.reload();
+ nextLevelBtn.onclick = () => {
+    const nextLevelId = currentLevelId + 1; // level berikutnya
 
-  nextLevelBtn.onclick = () => {
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = "{{ route('level.submit', $id) }}";
+    form.action = `/level/${nextLevelId}/submit`; // arah ke level berikutnya
     form.innerHTML = `@csrf
       <input type="hidden" name="jawaban" value='${JSON.stringify(answers)}'>
       <input type="hidden" name="benar" value="${correctCount}">
-      <input type="hidden" name="exp" value="${exp}">`;
+      <input type="hidden" name="bintang" value="${stars}">
+      <input type="hidden" name="exp" value="${exp}">
+      <input type="hidden" name="durasi" value="${duration}">`;
     document.body.appendChild(form);
     form.submit();
-  };
+};
+
+
 }
 
-    // Countdown awal
-    const countdownVals = ["3", "2", "1", "GO!"];
-    const beepShort = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
-    const beepLong = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_34b52b59cf.mp3");
 
-    async function playCountdown() {
-      for (let i = 0; i < countdownVals.length; i++) {
-        countdownEl.textContent = countdownVals[i];
-        countdownEl.style.animation = "none";
-        void countdownEl.offsetWidth;
-        countdownEl.style.animation = "scalePop 1s ease";
+  const countdownVals = ["3", "2", "1", "GO!"];
+  const beepShort = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+  const beepLong = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_34b52b59cf.mp3");
 
-        if (i < countdownVals.length - 1) {
-          beepShort.currentTime = 0;
-          await beepShort.play().catch(()=>{});
-          await new Promise(r => setTimeout(r, 1000));
-        } else {
-          beepLong.currentTime = 0;
-          await beepLong.play().catch(()=>{});
-          await new Promise(r => setTimeout(r, 1500));
-        }
+  async function playCountdown() {
+    for (let i = 0; i < countdownVals.length; i++) {
+      countdownEl.textContent = countdownVals[i];
+      countdownEl.style.animation = "none";
+      void countdownEl.offsetWidth;
+      countdownEl.style.animation = "scalePop 1s ease";
+
+      if (i < countdownVals.length - 1) {
+        beepShort.currentTime = 0;
+        await beepShort.play().catch(()=>{});
+        await new Promise(r => setTimeout(r, 1000));
+      } else {
+        beepLong.currentTime = 0;
+        await beepLong.play().catch(()=>{});
+        await new Promise(r => setTimeout(r, 1500));
       }
-
-      countdownEl.style.display = "none";
-      quizBox.style.display = "block";
-      timerDiv.style.display = "flex";
-      showQuestion(current);
-      startTimer();
-      
-      const bgMusic = document.getElementById("bgMusic");
-      bgMusic.play().catch(() => {
-        console.error("Audio gagal diputar.");
-      });
     }
 
-    window.onload = playCountdown;
+    countdownEl.style.display = "none";
+    quizBox.style.display = "block";
+    timerDiv.style.display = "flex";
+    showQuestion(current);
+    startTimer();
+    
+    const bgMusic = document.getElementById("bgMusic");
+    bgMusic.play().catch(() => {
+      console.error("Audio gagal diputar.");
+    });
+  }
 
-    function startTimer() {
-      const timer = setInterval(() => {
-        const minutes = Math.floor(timeLeft / 60);
-        const seconds = timeLeft % 60;
-        timerDisplay.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-        if (timeLeft <= 0) {
-          clearInterval(timer);
-          alert("⏰ Waktu habis! Jawaban dikirim otomatis.");
-          showResult();
-        }
-        timeLeft--;
-      }, 1000);
+  window.onload = playCountdown;
+
+  function startTimer() {
+  timer = setInterval(() => {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerDisplay.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
+
+    if (timeLeft <= 0) {
+      clearInterval(timer);
+      timer = null;
+      alert("⏰ Waktu habis! Jawaban dikirim otomatis.");
+      showResult();
     }
 
-    // Partikel
-    const canvas = document.getElementById('particles');
-    const ctx = canvas.getContext('2d');
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
+    timeLeft--;
+  }, 1000);
+}
 
-    const particles = Array.from({ length: 90 }, () => ({
-      x: Math.random() * canvas.width,
-      y: Math.random() * canvas.height,
-      size: Math.random() * 2.2,
-      speedX: (Math.random() - 0.5) * 0.5,
-      speedY: (Math.random() - 0.5) * 0.5,
-    }));
 
-    function drawParticles() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-      particles.forEach(p => {
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fill();
-        p.x += p.speedX;
-        p.y += p.speedY;
-        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
-      });
-      requestAnimationFrame(drawParticles);
-    }
-    drawParticles();
-  </script>
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+
+  const particles = Array.from({ length: 90 }, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    size: Math.random() * 2.2,
+    speedX: (Math.random() - 0.5) * 0.5,
+    speedY: (Math.random() - 0.5) * 0.5,
+  }));
+
+  function drawParticles() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+    particles.forEach(p => {
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+      p.x += p.speedX;
+      p.y += p.speedY;
+      if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+      if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+    });
+    requestAnimationFrame(drawParticles);
+  }
+  drawParticles();
+
+  const nextLevelBtn = document.getElementById("nextLevelBtn");
+nextLevelBtn.onclick = () => {
+  const form = document.createElement('form');
+  form.method = 'POST';
+  form.action = "{{ route('level.submit', $id) }}";
+  form.innerHTML = `@csrf
+    <input type="hidden" name="jawaban" value='${JSON.stringify(answers)}'>
+    <input type="hidden" name="benar" value="${correctCount}">
+    <input type="hidden" name="bintang" value="${stars}">
+    <input type="hidden" name="exp" value="${exp}">
+    <input type="hidden" name="durasi" value="${duration}">`;
+  document.body.appendChild(form);
+  form.submit();
+};
+</script>
+
 </body>
 </html>
