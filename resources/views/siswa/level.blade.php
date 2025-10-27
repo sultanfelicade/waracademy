@@ -283,7 +283,7 @@
     c.setAttribute('cx', pos.x);
     c.setAttribute('cy', pos.y);
     c.setAttribute('r', 22);
-    c.addEventListener('click', () => window.location.href = `/level/${levelNum}`);
+    c.setAttribute('data-href', `/level/${levelNum}`);
 
     // teks nomor level
     const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
