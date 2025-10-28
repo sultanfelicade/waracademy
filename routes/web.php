@@ -80,6 +80,7 @@ Route::get('/level', function () {
 Route::get('/level/{id}', [LevelController::class, 'preview'])->name('level.preview');
 Route::get('/level/{id}/start', [LevelController::class, 'start'])->name('level.start');
 Route::post('/level/{id}/submit', [LevelController::class, 'submit'])->name('level.submit');
+Route::get('/level/{id}', [LevelController::class, 'preview'])->name('level.preview');
 
 Route::get('/level/{id}/preview', [LevelController::class, 'preview'])->name('level.preview');
 Route::get('/level/{id}/start', [LevelController::class, 'start'])->name('level.start');

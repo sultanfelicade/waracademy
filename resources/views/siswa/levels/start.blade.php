@@ -16,6 +16,7 @@
       overflow-y: auto; /* ✅ sekarang bisa scroll vertikal */
       min-height: 100vh;
       position: relative; /* beri ruang bawah biar tidak kepotong */
+      overflow-x: hidden;
     }
 
     #particles {
@@ -153,7 +154,6 @@
       color: #a3d3fa;
       box-shadow: 0 0 25px rgba(0,150,255,0.4);
       backdrop-filter: blur(10px);
-      z-index: 5;
       display: none;
     }
 
@@ -361,35 +361,98 @@
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
+.back-btn {
+     position: fixed;
+      top: 20px;
+      left: 30px;
+      background: rgba(0,40,90,0.3);
+      border: 1px solid rgba(90,150,255,0.4);
+      padding: 14px 26px;
+      border-radius: 14px;
+      font-family: 'Orbitron', sans-serif;
+      font-size: 14px;
+      color: #a3d3fa;
+      box-shadow: 0 0 25px rgba(0,150,255,0.4);
+      backdrop-filter: blur(10px);
+      display: none
+}
+
+.popup {
+  display: none; /* default hidden */
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.5); /* overlay gelap */
+  justify-content: center;
+  align-items: center;
+  z-index: 5; /* pastikan di atas semua elemen lain */
+}
+
+.popup-content {
+  background: #1f2937;
+  padding: 30px;
+  border-radius: 12px;
+  text-align: center;
+  box-shadow: 0 0 20px rgba(0,0,0,0.5);
+  color: white;
+  pointer-events: auto; /* tombol bisa diklik */
+}
+
+
+.popup-buttons button {
+  margin: 10px;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+#yesButton {
+  color: white;
+  background: rgba(0,40,90,0.3);
+      border: 1px solid rgba(90,150,255,0.4);
+}
+
+#cancelButton {
+  background-color: #ddd;
+}
 
   </style>
 </head>
 
 <body class="flex flex-col items-center justify-center select-none">
   <audio id="bgMusic" loop>
-      <source src="/audio/tegang.mp3" type="audio/mpeg">
       Browser kamu tidak mendukung audio.
   </audio>
+
+   <!-- ✅ Tambahkan form tersembunyi di sini -->
+ <form id="submitForm" method="POST" action="{{ route('level.submit', $id) }}" style="display:none;">
+    @csrf
+    <input type="hidden" name="bintang" id="inputBintang">
+    <input type="hidden" name="exp" id="inputExp">
+    <input type="hidden" name="id_level" value="{{ $id }}">
+</form>
+
+  <!-- ✅ Selesai form -->
+
   <canvas id="particles"></canvas>
   <img src="{{ asset('images/war.png') }}" alt="Logo" class="logo-bg">
 
-  <div class="timer" id="timer"><span id="countdown">05:00</span></div>
+  
+  <div class="timer" id="timer"><span id="countdown">00:00</span></div>
   <div id="countdownStart" class="start-countdown"></div>
+  <button id="backButton" class="back-btn">← Kembali</button>
+
+
 
   <div id="quiz" class="soal-container">
     <h1 class="text-3xl mb-6 text-center text-glow font-bold">Level {{ $id }}</h1>
     <div id="questionBox"></div>
     <button id="nextBtn" class="btn-next">Selanjutnya ➤</button>
   </div>
-  <div class="fixed top-6 left-6 z-50 flex items-center space-x-2 text-white font-semibold">
-  <label for="volumeControl">🔊 Volume:</label>
-  <input type="range" id="volumeControl" min="0" max="1" step="0.05" value="0.5">
-</div>
-
-<audio id="bgMusic" loop>
-    <source src="/audio/tegang.mp3" type="audio/mpeg">
-    Browser kamu tidak mendukung audio.
-</audio>
 
   <!-- HASIL -->
   <div id="resultBox" class="soal-container relative overflow-hidden">
@@ -412,86 +475,153 @@
         <button id="restartBtn" class="hidden px-6 py-3 rounded-xl bg-gradient-to-r from-blue-700 to-indigo-900 border border-blue-400 text-white font-orbitron uppercase tracking-wide shadow-lg hover:scale-105 transition-all duration-300">
           🔁 Ulangi Level
         </button>
-
         <button id="nextLevelBtn" class="px-6 py-3 rounded-xl bg-gradient-to-r from-green-600 to-emerald-800 border border-green-400 text-white font-orbitron uppercase tracking-wide shadow-lg hover:scale-105 transition-all duration-300">
           ➤ Lanjut Level Berikutnya
         </button>
-
-        <a href="{{ route('level') }}" 
-          class="px-6 py-3 rounded-xl bg-gradient-to-r from-gray-700 to-gray-900 border border-gray-400 text-white font-orbitron uppercase tracking-wide shadow-lg hover:scale-105 transition-all duration-300">
-          ⬅ Kembali ke Level
-        </a>
       </div>
-
     </div>
   </div>
-
-@php
-    $soalData = [];
-
-    // Pastikan $pertanyaanList dikirim dari controller
-    foreach ($pertanyaanList as $p) {
-        $jawabanTexts = $p->pilihanjawaban->pluck('teks_jawaban')->toArray();
-
-        $benarIndex = null;
-        foreach ($p->pilihanjawaban as $k => $j) {
-            if ($j->adalah_benar == 1) {
-                $benarIndex = $k;
-                break;
-            }
-        }
-
-        $soalData[] = [
-            'q' => $p->teks_pertanyaan,
-            'a' => $jawabanTexts,
-            'correct' => $benarIndex !== null ? chr(65 + $benarIndex) : null,
-        ];
-    }
-@endphp
-
+<div id="backPopup" class="popup">
+  <div class="popup-content">
+    <p class="mb-4 font-semibold text-lg">Apakah kamu yakin ingin kembali ke halaman preview?</p>
+    <div class="popup-buttons flex justify-center">
+      <button id="yesButton" class="px-6 py-2 rounded-lg bg-red-500 text-white mr-3">Iya</button>
+      <button id="cancelButton" class="px-6 py-2 rounded-lg bg-gray-300 text-black">Batal</button>
+    </div>
+  </div>
+</div>
 <script>
+  // Ambil data dari controller (Laravel)
   const soalData = @json($soalData);
+  const durasiLevel = {{ $durasiLevel }};
 
   const quizBox = document.getElementById("quiz");
   const questionBox = document.getElementById("questionBox");
   const nextBtn = document.getElementById("nextBtn");
   const timerDiv = document.getElementById("timer");
+  const backButton = document.getElementById("backButton"); // FIX: gunakan nama yang konsisten
+  const backPopup = document.getElementById('backPopup');
+  const yesButton = document.getElementById('yesButton');
+  const cancelButton = document.getElementById('cancelButton');
   const countdownEl = document.getElementById("countdownStart");
   const timerDisplay = document.getElementById("countdown");
   const resultBox = document.getElementById("resultBox");
   const resultDetail = document.getElementById("resultDetail");
   const starContainer = document.getElementById("starContainer");
   const expResult = document.getElementById("expResult");
-  const bgMusic = document.getElementById("bgMusic");
-  const volumeControl = document.getElementById("volumeControl");
+  const resultSummary = document.getElementById("resultSummary");
+  const submitForm = document.getElementById('submitForm');
+  const nextLevelBtn = document.getElementById("nextLevelBtn");
+  const restartBtn = document.getElementById("restartBtn");
 
   let current = 0;
   let answers = {};
   let correctCount = 0;
-  let timeLeft = 5 * 60; // 5 menit
-  let timer = null;
+  let timeLeft = {{ $durasiLevel }}; // <- ambil otomatis dari DB
+  let timerInterval = null;
 
-  bgMusic.volume = parseFloat(volumeControl.value);
-  volumeControl.addEventListener("input", () => {
-  bgMusic.volume = parseFloat(volumeControl.value);
-});
+  /* -----------------------
+     Utility: update timer UI
+  ------------------------*/
+  function updateTimer() {
+    const minutes = Math.floor(timeLeft / 60);
+    const seconds = timeLeft % 60;
+    timerDisplay.textContent = `${String(minutes).padStart(2,'0')}:${String(seconds).padStart(2,'0')}`;
+  }
 
+  /* -----------------------
+     Timer control: start/pause/resume
+  ------------------------*/
+  function startTimer() {
+    timerDiv.style.display = "flex";
+    updateTimer(); // penting: tampilkan waktu awal langsung
 
+    // clear dulu kalau ada interval lama
+    if (timerInterval) clearInterval(timerInterval);
+
+    timerInterval = setInterval(() => {
+      if (timeLeft > 0) {
+        timeLeft--;
+        updateTimer();
+      } else {
+        clearInterval(timerInterval);
+        timerInterval = null;
+        alert("⏰ Waktu untuk level ini habis!");
+        showResult(); // panggil showResult saat habis
+      }
+    }, 1000);
+  }
+
+  function pauseTimer() {
+    if (timerInterval) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+    }
+  }
+
+  function resumeTimer() {
+    if (!timerInterval) {
+      timerInterval = setInterval(() => {
+        if (timeLeft > 0) {
+          timeLeft--;
+          updateTimer();
+        } else {
+          clearInterval(timerInterval);
+          timerInterval = null;
+          alert("⏰ Waktu untuk level ini habis!");
+          showResult();
+        }
+      }, 1000);
+    }
+  }
+
+  /* -----------------------
+     Back button + popup (fix pointer/variable issues)
+  ------------------------*/
+  backButton.addEventListener('click', () => {
+    backPopup.style.display = 'flex';
+    pauseTimer();
+  });
+
+  cancelButton.addEventListener('click', () => {
+    backPopup.style.display = 'none';
+    resumeTimer();
+  });
+
+  yesButton.addEventListener('click', () => {
+    // redirect ke peta level (ubah url kalau perlu)
+    window.location.href = "/level/1";
+  });
+
+  /* -----------------------
+     Tampilkan soal
+  ------------------------*/
   function showQuestion(index) {
     const soal = soalData[index];
+
     questionBox.innerHTML = `
       <p class="question">#${index + 1}. ${soal.q}</p>
       <div class="options-container">
-        ${soal.a.map((opt, i) => `<div class="option-card" data-value="${String.fromCharCode(65+i)}">${opt}</div>`).join("")}
-      </div>`;
-    
+        ${soal.a
+          .map(
+            (opt, i) =>
+              `<div class="option-card" data-value="${opt}">
+                ${String.fromCharCode(65 + i)}. ${opt}
+              </div>`
+          )
+          .join("")}
+      </div>
+    `;
+
     nextBtn.style.display = "none";
     questionBox.classList.remove("slide-out");
     questionBox.classList.add("slide-in");
 
-    document.querySelectorAll('.option-card').forEach(card => {
+    document.querySelectorAll(".option-card").forEach((card) => {
       card.addEventListener("click", () => {
-        document.querySelectorAll('.option-card').forEach(c => c.classList.remove("selected"));
+        document
+          .querySelectorAll(".option-card")
+          .forEach((c) => c.classList.remove("selected"));
         card.classList.add("selected");
         answers[current] = card.dataset.value;
         nextBtn.style.display = "inline-block";
@@ -499,123 +629,202 @@
     });
   }
 
-  nextBtn.addEventListener("click", () => {
-    const currentBox = questionBox;
+  /* -----------------------
+     AJAX save ke server (fetch)
+     - Menggunakan submitForm.action dan token dari form
+  ------------------------*/
+  async function simpanHasilKeDB(bintang, exp, benar) {
+    try {
+      // ambil token CSRF dari form hidden (generated by @csrf)
+      const tokenInput = submitForm.querySelector('input[name="_token"]');
+      const csrfToken = tokenInput ? tokenInput.value : '';
 
-    currentBox.classList.remove("slide-in");
-    currentBox.classList.add("slide-out");
+      // siapkan payload form data (sama seperti form submit biasa)
+      const fd = new FormData();
+      fd.append('bintang', bintang);
+      fd.append('exp', exp);
+      fd.append('benar', benar ?? 0);
+      fd.append('id_level', submitForm.querySelector('input[name="id_level"]').value);
 
-    const whoosh = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_3b77a0db25.mp3");
-    whoosh.volume = 0.3;
-    whoosh.play().catch(()=>{});
+      const res = await fetch(submitForm.action, {
+        method: 'POST',
+        headers: {
+          'X-CSRF-TOKEN': csrfToken
+        },
+        body: fd,
+        credentials: 'same-origin'
+      });
 
-    setTimeout(() => {
-      current++;
-      if (current < soalData.length) {
-        showQuestion(current);
-        currentBox.classList.remove("slide-out");
-        currentBox.classList.add("slide-in");
-      } else {
-        showResult();
+      if (!res.ok) {
+        console.error('Gagal menyimpan hasil ke server (status ' + res.status + ')');
+        return false;
       }
-    }, 600);
-  });
 
-  function showResult() {
-    if (timer) {
-        clearInterval(timer);
-        timer = null;
+      console.log('✅ Hasil berhasil tersimpan otomatis');
+      return true;
+    } catch (err) {
+      console.error('Error simpanHasilKeDB:', err);
+      return false;
     }
+  }
+
+  /* -----------------------
+     showResult: now async — simpan otomatis, lalu tampilkan hasil
+  ------------------------*/
+  async function showResult() {
+  // 🕒 Simpan nilai timeLeft sebelum timer benar-benar dihentikan
+  const safeTimeLeft = Number(timeLeft) || 0;
+
+  // 🔹 Hentikan timer dulu
+  clearInterval(timerInterval);
+  pauseTimer();
+
+  // 🔹 Sembunyikan elemen quiz
   quizBox.style.display = "none";
   timerDiv.style.display = "none";
+  backButton.style.display = "none";
   resultBox.style.display = "flex";
 
-  // Hitung jumlah benar
+  // 🔹 Hitung skor benar
   correctCount = soalData.filter((s, i) => answers[i] === s.correct).length;
-
   const total = soalData.length;
   resultSummary.textContent = `Kamu menjawab ${correctCount} dari ${total} soal dengan benar!`;
 
-  // Detail jawaban
-  resultDetail.innerHTML = soalData.map((s, i) => {
-    const isCorrect = answers[i] === s.correct;
-    return `
-      <p class="mb-2 ${isCorrect ? 'text-green-400' : 'text-red-400'}">
-        <span class="font-semibold">#${i+1}</span> ${s.q}<br>
-        <span class="text-sm text-gray-300">Jawabanmu: ${answers[i] || '-'} | Benar: ${s.correct}</span>
-      </p>`;
-  }).join('<hr class="my-2 border-gray-700 opacity-40">');
+  // 🔹 Detail hasil per soal
+  resultDetail.innerHTML = soalData
+    .map((s, i) => {
+      const isCorrect = answers[i] === s.correct;
+      return `
+        <p class="mb-2 ${isCorrect ? "text-green-400" : "text-red-400"}">
+          <span class="font-semibold">#${i + 1}</span> ${s.q}<br>
+          <span class="text-sm text-gray-300">
+            Jawabanmu: ${answers[i] || "-"} | Benar: ${s.correct}
+          </span>
+        </p>`;
+    })
+    .join('<hr class="my-2 border-gray-700 opacity-40">');
 
-  // Hitung bintang
+  // 🔹 Hitung jumlah bintang
   let stars = 0;
-  if (correctCount >= 7) stars = 3;
-  else if (correctCount >= 4) stars = 2;
-  else if (correctCount >= 1) stars = 1;
+  if (correctCount === 10) stars = 3;
+  else if (correctCount >= 7) stars = 2;
+  else if (correctCount >= 4) stars = 1;
 
-  // Tampilkan bintang
+  // 🔹 Tampilkan bintang
   starContainer.innerHTML = "";
   for (let i = 1; i <= 3; i++) {
-    const starEl = document.createElement('span');
-    starEl.classList.add('star');
-    if (i > stars) starEl.classList.add('inactive');
-    starEl.textContent = '★';
+    const starEl = document.createElement("span");
+    starEl.classList.add("star");
+    if (i > stars) starEl.classList.add("inactive");
+    starEl.textContent = "★";
     starContainer.appendChild(starEl);
   }
 
-  // Hitung waktu pengerjaan
-  const duration = (5 * 60) - timeLeft; // detik
-  const minutes = Math.floor(duration / 60);
-  const seconds = duration % 60;
+  // 🕓 Hitung waktu pengerjaan
+const totalDuration = Number(@json($durasiLevel)); // detik, dari DB
+  let durationUsed = totalDuration - safeTimeLeft;
+  if (durationUsed < 0) durationUsed = 0; // amanin dari nilai negatif
 
-  // Hitung EXP
+  const minutes = Math.floor(durationUsed / 60);
+  const seconds = durationUsed % 60;
+
+  // 🔹 Hitung EXP (baru dapet kalau ≥5 benar)
   let exp = 0;
-  if (stars === 2) {
-    // 2 bintang → EXP proporsional (contoh: 50–100)
-    exp = correctCount * 10 + Math.round(timeLeft * 0.5);
-  } else if (stars === 3) {
-    // 3 bintang → EXP lebih tinggi
-    exp = correctCount * 15 + Math.round(timeLeft * 1);
+  if (correctCount >= 5) {
+    if (stars === 3) {
+      exp = correctCount * 15 + Math.round(safeTimeLeft * 1);
+    } else if (stars === 2) {
+      exp = correctCount * 10 + Math.round(safeTimeLeft * 0.5);
+    } else if (stars === 1) {
+      exp = correctCount * 5 + Math.round(safeTimeLeft * 0.2);
+    } else {
+      exp = correctCount * 2;
+    }
   }
-  // stars 1 → 0 EXP
 
+  exp = Math.max(0, Math.floor(exp)); // jaga dari NaN / negatif
   expResult.textContent = `⌛ Waktu pengerjaan: ${minutes} menit ${seconds} detik | 🔥 EXP: +${exp}`;
 
-  // Tambahkan bar EXP
-  const expBar = document.createElement('div');
-  expBar.className = 'exp-bar';
-  const expFill = document.createElement('div');
-  expFill.className = 'exp-fill';
-  expBar.appendChild(expFill);
-  expResult.insertAdjacentElement('afterend', expBar);
+  // 🔹 Feedback teks
+  let feedbackText = "", feedbackColor = "";
+  if (stars === 0) {
+    feedbackText = "💀 LOSER 💀"; feedbackColor = "text-red-500";
+  } else if (stars === 1) {
+    feedbackText = "📘 Coba Belajar Lagi!"; feedbackColor = "text-yellow-400";
+  } else if (stars === 2) {
+    feedbackText = "💪 Baik! Tetap Belajar!"; feedbackColor = "text-blue-300";
+  } else if (stars === 3) {
+    feedbackText = "🏆 Kamu Hebat!"; feedbackColor = "text-green-400";
+  }
 
-  // Tombol restart & next level
-  const restartBtn = document.getElementById('restartBtn');
-  const nextLevelBtn = document.getElementById('nextLevelBtn');
-  const currentLevelId = {{ $id }};
+  const feedbackEl = document.createElement("div");
+  feedbackEl.className = `${feedbackColor} text-4xl font-orbitron font-bold mt-4 mb-6 animate-pulse drop-shadow-[0_0_20px_rgba(255,255,255,0.5)]`;
+  feedbackEl.textContent = feedbackText;
+  resultSummary.after(feedbackEl);
 
-restartBtn.style.display = "inline-block";
+  // 🔹 Tampilkan tombol
+  restartBtn.style.display = stars < 3 ? "inline-block" : "none";
+  nextLevelBtn.style.display = stars >= 2 ? "inline-block" : "none";
+
+  if (stars < 1) {
+    resultSummary.innerHTML = `<span class="text-red-400 font-bold">⚠️ Kamu gagal menyelesaikan misi!</span><br>Coba lagi untuk membuka level berikutnya.`;
+  }
 
   restartBtn.onclick = () => location.reload();
- nextLevelBtn.onclick = () => {
-    const nextLevelId = currentLevelId + 1; // level berikutnya
 
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = `/level/${nextLevelId}/submit`; // arah ke level berikutnya
-    form.innerHTML = `@csrf
-      <input type="hidden" name="jawaban" value='${JSON.stringify(answers)}'>
-      <input type="hidden" name="benar" value="${correctCount}">
-      <input type="hidden" name="bintang" value="${stars}">
-      <input type="hidden" name="exp" value="${exp}">
-      <input type="hidden" name="durasi" value="${duration}">`;
-    document.body.appendChild(form);
-    form.submit();
-};
+  // 🔹 Tombol kembali ke peta
+  const backBtn = document.createElement("button");
+  backBtn.textContent = "⬅️ Kembali ke Peta Level";
+  backBtn.className = "px-6 py-3 bg-gray-700 text-white font-semibold rounded-xl hover:bg-gray-600 transition-all duration-200 shadow-lg";
+  backBtn.onclick = () => window.location.href = "{{ route('level') }}";
 
+  // 🔹 Bungkus tombol (sejajar)
+  const buttonGroup = document.createElement("div");
+  buttonGroup.className = "flex flex-row justify-center gap-4 mt-8";
+  buttonGroup.appendChild(nextLevelBtn);
+  buttonGroup.appendChild(restartBtn);
+  buttonGroup.appendChild(backBtn);
+  resultBox.appendChild(buttonGroup);
 
+  // 🔹 Simpan otomatis ke DB
+  await simpanHasilKeDB(stars, exp, correctCount);
 }
 
 
+  nextBtn.onclick = () => {
+    current++;
+    if (current < soalData.length) {
+      questionBox.classList.add("slide-out");
+      setTimeout(() => showQuestion(current), 400);
+    } else {
+      // FIX: clearInterval pada timerInterval (bukan timer)
+      if (timerInterval) {
+        clearInterval(timerInterval);
+        timerInterval = null;
+      }
+      // panggil showResult (async fine)
+      showResult();
+    }
+  };
+
+  /* -----------------------
+     nextLevelBtn: tetap navigasi (tidak submit lagi)
+     Ubah target URL sesuai kebutuhan (preview/next level).
+     Di bawah gue arahkan ke preview level (sama seperti controller redirect).
+  ------------------------*/
+ nextLevelBtn.addEventListener('click', () => {
+  const nextLevel = {{ $id }} + 1;
+  if (nextLevel <= 20) {
+    window.location.href = `/level/${nextLevel}`;
+  } else {
+    alert("🎉 Selamat! Semua level sudah selesai!");
+  }
+});
+
+
+  /* -----------------------
+     COUNTDOWN AWAL (tak berubah banyak)
+  ------------------------*/
   const countdownVals = ["3", "2", "1", "GO!"];
   const beepShort = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
   const beepLong = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_34b52b59cf.mp3");
@@ -629,21 +838,22 @@ restartBtn.style.display = "inline-block";
 
       if (i < countdownVals.length - 1) {
         beepShort.currentTime = 0;
-        await beepShort.play().catch(()=>{});
-        await new Promise(r => setTimeout(r, 1000));
+        await beepShort.play().catch(() => {});
+        await new Promise((r) => setTimeout(r, 1000));
       } else {
         beepLong.currentTime = 0;
-        await beepLong.play().catch(()=>{});
-        await new Promise(r => setTimeout(r, 1500));
+        await beepLong.play().catch(() => {});
+        await new Promise((r) => setTimeout(r, 1500));
       }
     }
 
     countdownEl.style.display = "none";
     quizBox.style.display = "block";
     timerDiv.style.display = "flex";
+    backButton.style.display = "flex";
     showQuestion(current);
     startTimer();
-    
+
     const bgMusic = document.getElementById("bgMusic");
     bgMusic.play().catch(() => {
       console.error("Audio gagal diputar.");
@@ -652,26 +862,9 @@ restartBtn.style.display = "inline-block";
 
   window.onload = playCountdown;
 
-  function startTimer() {
-  timer = setInterval(() => {
-    const minutes = Math.floor(timeLeft / 60);
-    const seconds = timeLeft % 60;
-    timerDisplay.textContent = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`;
-
-    if (timeLeft <= 0) {
-      clearInterval(timer);
-      timer = null;
-      alert("⏰ Waktu habis! Jawaban dikirim otomatis.");
-      showResult();
-    }
-
-    timeLeft--;
-  }, 1000);
-}
-
-
-  const canvas = document.getElementById('particles');
-  const ctx = canvas.getContext('2d');
+  // === PARTIKEL LATAR === (tetap)
+  const canvas = document.getElementById("particles");
+  const ctx = canvas.getContext("2d");
   canvas.width = innerWidth;
   canvas.height = innerHeight;
 
@@ -685,8 +878,8 @@ restartBtn.style.display = "inline-block";
 
   function drawParticles() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
-    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
-    particles.forEach(p => {
+    ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
+    particles.forEach((p) => {
       ctx.beginPath();
       ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
       ctx.fill();
@@ -698,21 +891,6 @@ restartBtn.style.display = "inline-block";
     requestAnimationFrame(drawParticles);
   }
   drawParticles();
-
-  const nextLevelBtn = document.getElementById("nextLevelBtn");
-nextLevelBtn.onclick = () => {
-  const form = document.createElement('form');
-  form.method = 'POST';
-  form.action = "{{ route('level.submit', $id) }}";
-  form.innerHTML = `@csrf
-    <input type="hidden" name="jawaban" value='${JSON.stringify(answers)}'>
-    <input type="hidden" name="benar" value="${correctCount}">
-    <input type="hidden" name="bintang" value="${stars}">
-    <input type="hidden" name="exp" value="${exp}">
-    <input type="hidden" name="durasi" value="${duration}">`;
-  document.body.appendChild(form);
-  form.submit();
-};
 </script>
 
 </body>

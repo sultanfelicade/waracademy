@@ -83,17 +83,6 @@
     });
 
     // Efek fade-out untuk level dan trofi
-    document.querySelectorAll('.level-dot, .trophy-icon').forEach(dot => {
-      dot.addEventListener('click', e => {
-        e.preventDefault(); // Mencegah klik default
-        const targetUrl = dot.getAttribute('onclick')?.match(/'(.*?)'/)?.[1] 
-                         || dot.dataset.href 
-                         || dot.href 
-                         || dot.getAttribute('onclick')
-                         || e.target.getAttribute('onclick');
-        fadeOutAudio(audio, 1500, () => window.location.href = targetUrl);
-      });
-    });
   });
 </script>
 

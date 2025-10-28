@@ -18,6 +18,7 @@
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(to bottom, #0f1b2e, #304863 50%, #3b5875);
       color: white;
+      overflow-x: hidden
     }
 
     /* Scrollbar */
@@ -205,8 +206,8 @@
 
   <!-- KISI-KISI -->
 <div class="kisi-container space-y-5 overflow-y-auto max-h-[500px] p-4">
-    @if($kisi->isNotEmpty())
-        @foreach ($kisi as $item)
+    @if($kisiList->isNotEmpty())
+        @foreach ($kisiList as $item)
             @php
                 $topikData = json_decode($item->topik ?? '[]', true);
             @endphp
@@ -214,7 +215,10 @@
             @if(!empty($topikData))
                 @foreach ($topikData as $topik)
                     <div class="section bg-white/5 p-4 rounded-lg shadow-lg mb-3">
-                        <h3 class="section-title text-lg font-semibold mb-2">{{ $topik['nama'] ?? 'Topik Tidak Diketahui' }}</h3>
+                        <h3 class="section-title text-lg font-semibold mb-2">
+                            {{ $topik['nama'] ?? 'Topik Tidak Diketahui' }}
+                        </h3>
+
                         @if(!empty($topik['submateri']))
                             <ul class="list-disc list-inside">
                                 @foreach($topik['submateri'] as $sub)
@@ -224,15 +228,27 @@
                         @endif
                     </div>
                 @endforeach
-            @else
             @endif
         @endforeach
+
+        {{-- === Tambahkan info jumlah soal & waktu di bawah semua kisi === --}}
+        @php
+            $firstKisi = $kisiList->first();
+        @endphp
+        <div class="summary mt-6 bg-white/10 p-4 rounded-lg text-center shadow-lg">
+            <p class="text-gray-300 text-lg">
+                🧩 <strong>Jumlah Soal:</strong> {{ $firstKisi->jumlah_soal ?? '-' }}
+            </p>
+            <p class="text-gray-300 text-lg">
+                ⏱️ <strong>Waktu:</strong> {{ $firstKisi->waktu_menit ?? '-' }} menit
+            </p>
+        </div>
     @else
-        <p class="text-center text-gray-400">Belum ada kisi-kisi untuk semua level.</p>
+        <p class="text-center text-gray-400">
+            Belum ada kisi-kisi untuk level ini.
+        </p>
     @endif
 </div>
-
-
 
   <!-- Tombol Navigasi -->
   <div class="flex justify-center gap-6 mt-8 z-10">
