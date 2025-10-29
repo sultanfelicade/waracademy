@@ -425,6 +425,7 @@
 
 <body class="flex flex-col items-center justify-center select-none">
   <audio id="bgMusic" loop>
+      <source src="/audio/tegang.mp3" type="audio/mpeg">
       Browser kamu tidak mendukung audio.
   </audio>
 

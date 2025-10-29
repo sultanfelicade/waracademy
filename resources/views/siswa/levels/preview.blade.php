@@ -5,10 +5,34 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Kisi-Kisi Level {{ $id }} | WarAcademy</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <script type="module">
+<script type="module">
   import { initMusic, fadeInMusic } from '/js/music.js';
+
+  // 1. Ambil setting dari localStorage (kunci yg sama dgn Home)
+  const savedVol = parseFloat(localStorage.getItem("volume"));
+  const savedMute = localStorage.getItem("muted");
+
+  // 2. Terapkan nilai default jika tidak ada
+  const volume = !isNaN(savedVol) ? savedVol : 0.5;
+  const muted = savedMute === "true"; // Pastikan logikanya sama
+
+  // 3. Inisialisasi musik baru
   const music = initMusic('/audio/classical.mp3');
-  fadeInMusic(1500); // efek masuk halus
+
+  // 4. Terapkan setting volume & mute ke musik baru INI
+  if (music) {
+      // Kita asumsikan initMusic() mengembalikan elemen audio
+      // atau objek yg punya properti .volume dan .muted
+      music.volume = volume;
+      music.muted = muted;
+
+      // 5. Hanya mainkan (fade in) jika diizinkan
+      if (!music.muted && music.volume > 0) {
+          fadeInMusic(1500); // efek masuk halus
+      }
+  } else {
+      console.error("Gagal menginisialisasi musik dari music.js");
+  }
 </script>
 
   <style>
@@ -51,8 +75,7 @@
     }
 
     .kisi-container {
-      width: 90%;
-      max-width: 700px;
+      max-width: 2000px;
       max-height: 430px;
       overflow-y: auto;
       background: rgba(255,255,255,0.03);
@@ -194,69 +217,68 @@
 
 <body class="flex flex-col items-center justify-center min-h-screen relative p-6 select-none">
 
-  <!-- Logo Latar -->
   <img src="{{ asset('images/war.png') }}" alt="Logo" class="logo-bg">
   <canvas id="particles"></canvas>
 
-  <!-- Judul -->
-  <div class="relative z-10 text-center mb-6">
-    <h1 class="text-4xl font-bold text-glow mb-2">LEVEL {{ $id }}</h1>
-    <p class="text-gray-300 text-lg">Kisi-kisi pertanyaan yang akan kamu hadapi:</p>
-  </div>
+  <div class="relative z-10 flex flex-col items-center w-full max-w-7xl mx-auto">
 
-  <!-- KISI-KISI -->
-<div class="kisi-container space-y-5 overflow-y-auto max-h-[500px] p-4">
-    @if($kisiList->isNotEmpty())
-        @foreach ($kisiList as $item)
-            @php
-                $topikData = json_decode($item->topik ?? '[]', true);
-            @endphp
+    <div class="text-center mb-6">
+      <h1 class="text-4xl font-bold text-glow mb-2">LEVEL {{ $id }}</h1>
+    </div>
 
-            @if(!empty($topikData))
-                @foreach ($topikData as $topik)
-                    <div class="section bg-white/5 p-4 rounded-lg shadow-lg mb-3">
-                        <h3 class="section-title text-lg font-semibold mb-2">
-                            {{ $topik['nama'] ?? 'Topik Tidak Diketahui' }}
-                        </h3>
+    <div class="flex justify-center gap-6 mb-6 z-10">
+      <a href="{{ url('/level') }}" class="btn-game">⬅ Kembali</a>
+      <a href="{{ route('level.start', $id) }}" class="btn-game">Mulai Soal 🚀</a>
+    </div>
 
-                        @if(!empty($topik['submateri']))
-                            <ul class="list-disc list-inside">
-                                @foreach($topik['submateri'] as $sub)
-                                    <li>{{ $sub }}</li>
-                                @endforeach
-                            </ul>
-                        @endif
-                    </div>
-                @endforeach
-            @endif
-        @endforeach
-
-        {{-- === Tambahkan info jumlah soal & waktu di bawah semua kisi === --}}
-        @php
-            $firstKisi = $kisiList->first();
-        @endphp
-        <div class="summary mt-6 bg-white/10 p-4 rounded-lg text-center shadow-lg">
-            <p class="text-gray-300 text-lg">
-                🧩 <strong>Jumlah Soal:</strong> {{ $firstKisi->jumlah_soal ?? '-' }}
-            </p>
-            <p class="text-gray-300 text-lg">
-                ⏱️ <strong>Waktu:</strong> {{ $firstKisi->waktu_menit ?? '-' }} menit
-            </p>
-        </div>
-    @else
-        <p class="text-center text-gray-400">
-            Belum ada kisi-kisi untuk level ini.
+    @php
+        $firstKisi = $kisiList->first();
+    @endphp
+    <div class="summary mb-6 bg-white/10 p-4 rounded-lg text-center shadow-lg w-full max-w-lg">
+        <p class="text-gray-300 text-lg">
+            🧩 <strong>Jumlah Soal:</strong> {{ $firstKisi->jumlah_soal ?? '-' }}
         </p>
-    @endif
-</div>
+        <p class="text-gray-300 text-lg">
+            ⏱️ <strong>Waktu:</strong> {{ $firstKisi->waktu_menit ?? '-' }} menit
+        </p>
+    </div>
 
-  <!-- Tombol Navigasi -->
-  <div class="flex justify-center gap-6 mt-8 z-10">
-    <a href="{{ url('/level') }}" class="btn-game">⬅ Kembali</a>
-    <a href="{{ route('level.start', $id) }}" class="btn-game">Mulai Soal 🚀</a>
-  </div>
+    <p class="text-gray-300 text-lg mb-6">Kisi-kisi pertanyaan yang akan kamu hadapi:</p>
 
-  <script>
+    <div class="kisi-container grid grid-cols-5 gap-4 overflow-y-auto max-h-[500px] p-4 w-full">
+      @if($kisiList->isNotEmpty())
+          @foreach ($kisiList as $item)
+              @php
+                  $topikData = json_decode($item->topik ?? '[]', true);
+              @endphp
+
+              @if(!empty($topikData))
+                  @foreach ($topikData as $topik)
+                      <div class="section bg-white/5 p-4 rounded-lg shadow-lg">
+                        <h3 class="section-title text-base font-semibold mb-2">
+                              {{ $topik['nama'] ?? 'Topik Tidak Diketahui' }}
+                          </h3>
+
+                          @if(!empty($topik['submateri']))
+                              <ul class="list-disc text-sm list-inside">
+                                  @foreach($topik['submateri'] as $sub)
+                                      <li>{{ $sub }}</li>
+                                  @endforeach
+                              </ul>
+                          @endif
+                      </div>
+                  @endforeach
+              @endif
+          @endforeach
+      @else
+          <p class="text-center text-gray-400 col-span-5">
+            Belum ada kisi-kisi untuk level ini.
+          </p>
+      @endif
+      
+      </div>
+
+  </div> <script>
     const canvas = document.getElementById('particles');
     const ctx = canvas.getContext('2d');
     canvas.width = innerWidth;

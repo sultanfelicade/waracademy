@@ -20,42 +20,6 @@
             }
         }
   </script>
-
-<script type="module">
-  import { initMusic, fadeOutMusic, toggleMusic, setVolume } from '/js/music.js';
-
-  const music = initMusic('/audio/sound.mp3'); // ganti dengan musikmu
-
-  // Saat klik pindah halaman
-  document.addEventListener("DOMContentLoaded", () => {
-    document.querySelectorAll("a").forEach(link => {
-      link.addEventListener("click", (e) => {
-        e.preventDefault();
-        const target = e.currentTarget.href;
-        fadeOutMusic(1000, () => window.location.href = target);
-      });
-    });
-
-    // Tombol toggle on/off
-    const btnToggle = document.getElementById("toggleMusic");
-    const slider = document.getElementById("volumeSlider");
-
-    if (btnToggle) {
-      btnToggle.addEventListener("click", () => {
-        const enabled = localStorage.getItem("bgmEnabled") !== "true";
-        toggleMusic(enabled);
-        btnToggle.textContent = enabled ? "🔊 Musik ON" : "🔇 Musik OFF";
-      });
-      // Set label awal
-      btnToggle.textContent = localStorage.getItem("bgmEnabled") !== "false" ? "🔊 Musik ON" : "🔇 Musik OFF";
-    }
-
-    if (slider) {
-      slider.value = localStorage.getItem("bgmVolume") || 0.5;
-      slider.addEventListener("input", () => setVolume(slider.value));
-    }
-  });
-</script>
 </head>
 
 <body class="font-poppins relative bg-gradient-to-b from-[#0f1b2e] via-[#304863] to-[#3b5875] min-h-screen flex flex-col justify-between p-6 text-white overflow-hidden select-none">
@@ -64,11 +28,10 @@
   @include('siswa.sidebar')
 
   <!-- MUSIC BACKGROUND -->
-  <audio id="bgMusic" loop>
-      <source src="/audio/sound.mp3" type="audio/mpeg">
-      Browser kamu tidak mendukung audio.
-  </audio>
 
+<audio id="bgMusic" loop>
+    <source src="/audio/sound.mp3" type="audio/mpeg">
+</audio>
   <!-- CANVAS PARTIKEL -->
   <canvas id="particles" class="absolute inset-0 z-0"></canvas>
 
