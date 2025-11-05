@@ -11,14 +11,32 @@ use Illuminate\Support\Facades\DB;
 
 class LevelController extends Controller
 {
-    /**
-     * Peta level siswa.
-     */
-    public function map()
-    {
-        $levels = Level::orderBy('nomor_level', 'asc')->get();
-        return view('siswa.maplevel', compact('levels'));
+public function map()
+{
+    $idPengguna = session('pengguna_id');
+    $levels = Level::orderBy('nomor_level', 'asc')->get();
+
+    // Ambil progres bintang pengguna
+    $userProgressStars = \DB::table('progreslevelpengguna')
+        ->where('id_pengguna', $idPengguna)
+        ->pluck('bintang', 'id_level')
+        ->toArray();
+
+    // Tambahkan status "locked" ke setiap level
+    foreach ($levels as $index => $level) {
+        if ($index == 0) {
+            // Level pertama selalu terbuka
+            $level->locked = false;
+        } else {
+            $prevLevelId = $levels[$index - 1]->id;
+            // Cek apakah level sebelumnya sudah dikerjakan
+            $level->locked = !isset($userProgressStars[$prevLevelId]);
+        }
     }
+
+    return view('siswa.level', compact('levels', 'userProgressStars'));
+}
+
 
  public function preview($id)
 {

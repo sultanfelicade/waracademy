@@ -495,6 +495,7 @@
   // Ambil data dari controller (Laravel)
   const soalData = @json($soalData);
   const durasiLevel = {{ $durasiLevel }};
+  const currentLevelId = {{ $id }}; // <-- Pastikan ini ada!
 
   const quizBox = document.getElementById("quiz");
   const questionBox = document.getElementById("questionBox");
@@ -591,9 +592,8 @@
 
   yesButton.addEventListener('click', () => {
     // redirect ke peta level (ubah url kalau perlu)
-    window.location.href = "/level/1";
+    window.location.href = "/level/" + currentLevelId;
   });
-
   /* -----------------------
      Tampilkan soal
   ------------------------*/
@@ -831,6 +831,7 @@ const totalDuration = Number(@json($durasiLevel)); // detik, dari DB
   const beepLong = new Audio("https://cdn.pixabay.com/audio/2022/03/15/audio_34b52b59cf.mp3");
 
   async function playCountdown() {
+    // Bagian countdown SFX biarkan seperti aslinya
     for (let i = 0; i < countdownVals.length; i++) {
       countdownEl.textContent = countdownVals[i];
       countdownEl.style.animation = "none";
@@ -855,12 +856,31 @@ const totalDuration = Number(@json($durasiLevel)); // detik, dari DB
     showQuestion(current);
     startTimer();
 
-    const bgMusic = document.getElementById("bgMusic");
-    bgMusic.play().catch(() => {
-      console.error("Audio gagal diputar.");
-    });
-  }
+    // --- REVISI MULAI DI SINI ---
 
+    const bgMusic = document.getElementById("bgMusic");
+
+    // 1. Ambil setting volume dari Home (kunci: 'volume' dan 'muted')
+    const savedVol = parseFloat(localStorage.getItem("volume"));
+    const savedMute = localStorage.getItem("muted");
+
+    // 2. Tentukan nilainya (dengan default 0.5 jika belum diset)
+    const volume = !isNaN(savedVol) ? savedVol : 0.5;
+    const muted = savedMute === "true"; // 'true' (string)
+
+    // 3. Terapkan setting ke bgMusic
+    bgMusic.volume = volume;
+    bgMusic.muted = muted;
+
+    // 4. Hanya putar musik jika tidak di-mute DAN volume > 0
+    if (!bgMusic.muted && bgMusic.volume > 0) {
+      bgMusic.play().catch(() => {
+        console.error("Audio gagal diputar.");
+      });
+    }
+    
+    // --- SELESAI REVISI ---
+  }
   window.onload = playCountdown;
 
   // === PARTIKEL LATAR === (tetap)

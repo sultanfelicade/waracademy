@@ -219,13 +219,7 @@ window.addEventListener("DOMContentLoaded", () => {
   const numLevels = 20;
   const levelsGroup = document.getElementById('levels');
 
-  // contoh hasil skor -> jumlah bintang
-  const levelStars = {
-    1: 3, // level 1: 2 bintang aktif
-    2: 2,
-    3: 0,
-  };
-
+  const levelStars = @json($userProgressStars ?? []);
   // potong path untuk garis neon
   const level1T = 1 / (numLevels + 1);
   const startFrom = pathLength * level1T;
@@ -253,7 +247,18 @@ window.addEventListener("DOMContentLoaded", () => {
     c.setAttribute('cx', pos.x);
     c.setAttribute('cy', pos.y);
     c.setAttribute('r', 22);
-    c.addEventListener('click', () => window.location.href = `/level/${levelNum}`);
+    // cek apakah level sebelumnya sudah diselesaikan
+    const isUnlocked = levelNum === 1 || levelStars[String(levelNum - 1)] > 0;
+
+    if (isUnlocked) {
+      c.addEventListener('click', () => window.location.href = `/level/${levelNum}`);
+    } else {
+      c.style.opacity = 0.3;
+      c.style.cursor = 'not-allowed';
+      c.addEventListener('click', () => {
+        alert('Level ini masih terkunci! Selesaikan level sebelumnya dulu.');
+      });
+    }
 
     // teks nomor level
     const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -278,17 +283,33 @@ window.addEventListener("DOMContentLoaded", () => {
     starsDiv.style.gap = '6px';
     starsDiv.style.fontSize = '16px';
 
-    // jumlah bintang aktif
-    const activeStars = levelStars[levelNum] || 0;
+    const rawData = levelStars[String(levelNum)];
 
-    for (let s = 0; s < 3; s++) {
-      const star = document.createElement('i');
-      star.classList.add('fa-star');
-      star.classList.add('fa-solid');
-      star.style.color = s < activeStars ? '#facc15' : '#9ca3af';
-      star.style.filter = s < activeStars ? 'drop-shadow(0 0 5px rgba(250,204,21,0.8))' : 'none';
-      starsDiv.appendChild(star);
-    }
+    const activeStars = (typeof rawData === 'object' && rawData !== null && rawData.stars !== undefined) 
+      ? rawData.stars
+      : (rawData || 0);
+
+    const isPlayed = activeStars > 0;
+    
+    for (let s = 0; s < 3; s++) {
+      const star = document.createElement('i');
+      star.classList.add('fa-star');
+      star.classList.add('fa-solid');
+      
+        // Logika Baru:
+        if (isPlayed) {
+            // Jika SUDAH main: Tampilkan emas atau abu-abu
+            star.style.color = s < activeStars ? '#facc15' : '#9ca3af';
+            star.style.filter = s < activeStars ? 'drop-shadow(0 0 5px rgba(250,204,21,0.8))' : 'none';
+            star.style.opacity = 1; // Bintang terlihat jelas
+        } else {
+            star.style.color = '#9ca3af'; 
+            star.style.filter = 'none';
+            star.style.opacity = 0.2; 
+        }
+        
+      starsDiv.appendChild(star);
+    }
 
     fObj.appendChild(starsDiv);
     g.appendChild(fObj);
