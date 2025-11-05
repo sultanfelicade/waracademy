@@ -21,81 +21,51 @@
   </script>
 
 <script type="module">
-  import { initMusic, fadeInMusic, fadeOutMusic } from '/js/music.js';
-
-  // Inisialisasi musik
-  const music = initMusic('/audio/classical.mp3'); // Ganti dengan audio yang diinginkan
-
-  window.addEventListener('DOMContentLoaded', () => {
-    const audio = document.getElementById('bgMusic');
-    const savedVol = localStorage.getItem('volume');
-    const savedMute = localStorage.getItem('muted');
-    const volume = savedVol ? parseFloat(savedVol) : 0.6;
-    const muted = savedMute === 'true';
-    audio.volume = 0; // Mulai fade-in dari 0
-
-    // Fungsi fade-in audio
-    function fadeInAudio(audio, duration = 2000) {
-      const step = 50;
-      const fadeAmount = volume / (duration / step);
-      const fadeInterval = setInterval(() => {
-        if (audio.volume + fadeAmount < volume) {
-          audio.volume += fadeAmount;
-        } else {
-          audio.volume = volume;
-          clearInterval(fadeInterval);
-        }
-      }, step);
+window.addEventListener("DOMContentLoaded", () => {
+    const audio = document.getElementById("bgMusic");
+    if (!audio) {
+        console.warn("Audio 'bgMusic' tidak ditemukan di level.blade.php");
+        return;
     }
 
-    // Fungsi fade-out audio
-    function fadeOutAudio(audio, duration = 1500, callback) {
-      const step = 50;
-      const fadeAmount = audio.volume / (duration / step);
-      const fadeInterval = setInterval(() => {
-        if (audio.volume - fadeAmount > 0) {
-          audio.volume -= fadeAmount;
-        } else {
-          audio.volume = 0;
-          clearInterval(fadeInterval);
-          audio.pause();
-          if (callback) callback();
-        }
-      }, step);
+    // --- 1. Ambil Setting (Pastikan Kunci BENAR: 'volume' dan 'muted') ---
+    const savedVol = parseFloat(localStorage.getItem("volume"));
+    const savedMute = localStorage.getItem("muted"); 
+    const savedTime = parseFloat(localStorage.getItem("bgmCurrentTime"));
+
+    // Terapkan setting
+    const volume = !isNaN(savedVol) ? savedVol : 0.5;
+    const muted = savedMute === "true"; // Logika 'true' (string)
+
+    audio.volume = volume;
+    audio.muted = muted; 
+
+    // --- 2. Terapkan Posisi Detik Musik ---
+    if (!isNaN(savedTime) && savedTime > 0) {
+        audio.currentTime = savedTime;
     }
 
-    // Mulai fade-in saat halaman load
-    if (!muted) {
-      audio.play().then(() => fadeInAudio(audio, 2000)).catch(() => {});
-    }
-
-    // Efek fade-out untuk semua link keluar
-    document.querySelectorAll('a[href]').forEach(link => {
-      link.addEventListener('click', e => {
-        const href = link.getAttribute('href');
-        if (!href || href.startsWith('#') || href.startsWith('javascript')) return;
-
-        e.preventDefault();
-        fadeOutAudio(audio, 1500, () => {
-          window.location.href = href; // Arahkan ke link setelah fade-out
+    // --- 3. Putar Musik ---
+    if (!audio.muted && audio.volume > 0) {
+        audio.play().catch(error => {
+            console.warn("Autoplay musik dicegah oleh browser.");
         });
-      });
-    });
+    } else {
+        // Jika volume 0 atau di-mute, paksa PAUSE
+        audio.pause();
+    }
 
-    // Efek fade-out untuk level dan trofi
-    document.querySelectorAll('.level-dot, .trophy-icon').forEach(dot => {
-      dot.addEventListener('click', e => {
-        e.preventDefault(); // Mencegah klik default
-        const targetUrl = dot.getAttribute('onclick')?.match(/'(.*?)'/)?.[1] 
-                         || dot.dataset.href 
-                         || dot.href 
-                         || dot.getAttribute('onclick')
-                         || e.target.getAttribute('onclick');
-        fadeOutAudio(audio, 1500, () => window.location.href = targetUrl);
-      });
+    // --- 4. Simpan Posisi Saat Pergi ---
+    window.addEventListener("beforeunload", () => {
+        if (!audio.paused && !audio.muted && audio.currentTime > 0) {
+            localStorage.setItem("bgmCurrentTime", audio.currentTime);
+        } else {
+            localStorage.removeItem("bgmCurrentTime");
+        }
     });
-  });
+});
 </script>
+
 
   <style>
     body {
@@ -188,9 +158,9 @@
 </head>
 
 <body class="bg-gradient-to-b from-[#0f1b2e] via-[#243b55] to-[#3b5875] min-h-screen text-white">
-  <audio id="bgMusic" loop>
-      <source src="/audio/classical.mp3" type="audio/mpeg">
-  </audio>
+<audio id="bgMusic" loop>
+    <source src="/audio/sound.mp3" type="audio/mpeg">
+</audio>
   <canvas id="particles" class="absolute inset-0 z-0"></canvas>
   <img src="/images/war.png" alt="Logo"
        style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(1.5);
@@ -249,13 +219,7 @@
   const numLevels = 20;
   const levelsGroup = document.getElementById('levels');
 
-  // contoh hasil skor -> jumlah bintang
-  const levelStars = {
-    1: 3, // level 1: 2 bintang aktif
-    2: 2,
-    3: 0,
-  };
-
+  const levelStars = @json($userProgressStars ?? []);
   // potong path untuk garis neon
   const level1T = 1 / (numLevels + 1);
   const startFrom = pathLength * level1T;
@@ -308,17 +272,33 @@
     starsDiv.style.gap = '6px';
     starsDiv.style.fontSize = '16px';
 
-    // jumlah bintang aktif
-    const activeStars = levelStars[levelNum] || 0;
+    const rawData = levelStars[String(levelNum)];
 
-    for (let s = 0; s < 3; s++) {
-      const star = document.createElement('i');
-      star.classList.add('fa-star');
-      star.classList.add('fa-solid');
-      star.style.color = s < activeStars ? '#facc15' : '#9ca3af';
-      star.style.filter = s < activeStars ? 'drop-shadow(0 0 5px rgba(250,204,21,0.8))' : 'none';
-      starsDiv.appendChild(star);
-    }
+    const activeStars = (typeof rawData === 'object' && rawData !== null && rawData.stars !== undefined) 
+      ? rawData.stars
+      : (rawData || 0);
+
+    const isPlayed = activeStars > 0;
+    
+    for (let s = 0; s < 3; s++) {
+      const star = document.createElement('i');
+      star.classList.add('fa-star');
+      star.classList.add('fa-solid');
+      
+        // Logika Baru:
+        if (isPlayed) {
+            // Jika SUDAH main: Tampilkan emas atau abu-abu
+            star.style.color = s < activeStars ? '#facc15' : '#9ca3af';
+            star.style.filter = s < activeStars ? 'drop-shadow(0 0 5px rgba(250,204,21,0.8))' : 'none';
+            star.style.opacity = 1; // Bintang terlihat jelas
+        } else {
+            star.style.color = '#9ca3af'; 
+            star.style.filter = 'none';
+            star.style.opacity = 0.2; 
+        }
+        
+      starsDiv.appendChild(star);
+    }
 
     fObj.appendChild(starsDiv);
     g.appendChild(fObj);

@@ -77,9 +77,15 @@ Route::get('/level', function () {
     return view('siswa.level');
 })->name('level'); // 👈 jangan ubah ini
 
+// 🗺️ Route peta level (tanpa parameter, HARUS di atas)
+Route::get('/level', [LevelController::class, 'map'])->name('level');
+
+// 🎯 Route level detail & quiz (dengan parameter)
 Route::get('/level/{id}', [LevelController::class, 'preview'])->name('level.preview');
 Route::get('/level/{id}/start', [LevelController::class, 'start'])->name('level.start');
 Route::post('/level/{id}/submit', [LevelController::class, 'submit'])->name('level.submit');
+
+
 
 Route::get('/level/{id}/preview', [LevelController::class, 'preview'])->name('level.preview');
 Route::get('/level/{id}/start', [LevelController::class, 'start'])->name('level.start');
