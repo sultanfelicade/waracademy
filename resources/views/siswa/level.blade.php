@@ -247,7 +247,18 @@ window.addEventListener("DOMContentLoaded", () => {
     c.setAttribute('cx', pos.x);
     c.setAttribute('cy', pos.y);
     c.setAttribute('r', 22);
-    c.setAttribute('data-href', `/level/${levelNum}`);
+    // cek apakah level sebelumnya sudah diselesaikan
+    const isUnlocked = levelNum === 1 || levelStars[String(levelNum - 1)] > 0;
+
+    if (isUnlocked) {
+      c.addEventListener('click', () => window.location.href = `/level/${levelNum}`);
+    } else {
+      c.style.opacity = 0.3;
+      c.style.cursor = 'not-allowed';
+      c.addEventListener('click', () => {
+        alert('Level ini masih terkunci! Selesaikan level sebelumnya dulu.');
+      });
+    }
 
     // teks nomor level
     const txt = document.createElementNS('http://www.w3.org/2000/svg', 'text');
@@ -272,7 +283,7 @@ window.addEventListener("DOMContentLoaded", () => {
     starsDiv.style.gap = '6px';
     starsDiv.style.fontSize = '16px';
 
-    const rawData = levelStars[String(levelNum)];
+    const rawData = levelStars[String(levelNum)];
 
     const activeStars = (typeof rawData === 'object' && rawData !== null && rawData.stars !== undefined) 
       ? rawData.stars
@@ -280,11 +291,11 @@ window.addEventListener("DOMContentLoaded", () => {
 
     const isPlayed = activeStars > 0;
     
-    for (let s = 0; s < 3; s++) {
-      const star = document.createElement('i');
-      star.classList.add('fa-star');
-      star.classList.add('fa-solid');
-      
+    for (let s = 0; s < 3; s++) {
+      const star = document.createElement('i');
+      star.classList.add('fa-star');
+      star.classList.add('fa-solid');
+      
         // Logika Baru:
         if (isPlayed) {
             // Jika SUDAH main: Tampilkan emas atau abu-abu
@@ -297,8 +308,8 @@ window.addEventListener("DOMContentLoaded", () => {
             star.style.opacity = 0.2; 
         }
         
-      starsDiv.appendChild(star);
-    }
+      starsDiv.appendChild(star);
+    }
 
     fObj.appendChild(starsDiv);
     g.appendChild(fObj);
